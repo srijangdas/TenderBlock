@@ -1,6 +1,7 @@
 package icu.telepathystudios.puretender.controller;
 
 import icu.telepathystudios.puretender.dto.admin.AdminActionResponse;
+import icu.telepathystudios.puretender.dto.admin.AdminUserDetailsResponse;
 import icu.telepathystudios.puretender.dto.admin.AdminUserResponse;
 import icu.telepathystudios.puretender.service.role_man.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -81,5 +82,12 @@ public class AdminController {
         return ResponseEntity.ok(
                 adminService.enableUser(userId)
         );
+    }
+
+    @GetMapping("/users/{userId}/details")
+    public AdminUserDetailsResponse getUserDetails(
+            @PathVariable UUID userId
+    ) {
+        return adminService.getUserDetails(userId);
     }
 }

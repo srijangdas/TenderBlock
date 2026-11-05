@@ -1,11 +1,14 @@
 package icu.telepathystudios.puretender.service.role_man;
 
 import icu.telepathystudios.puretender.dto.admin.AdminActionResponse;
+import icu.telepathystudios.puretender.dto.admin.AdminUserDetailsResponse;
 import icu.telepathystudios.puretender.dto.admin.AdminUserResponse;
+import icu.telepathystudios.puretender.dto.company.CompanyProfileResponse;
 import icu.telepathystudios.puretender.model.AccountStatus;
 import icu.telepathystudios.puretender.model.Role;
 import icu.telepathystudios.puretender.model.User;
 import icu.telepathystudios.puretender.repo.AdminRepo;
+import icu.telepathystudios.puretender.repo.CompanyProfileRepo;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AdminService {
     private final AdminRepo adminRepo;
+    private final CompanyProfileRepo companyProfileRepo;
 
     // View all pending registrations
     @Transactional(readOnly = true)
@@ -157,6 +161,43 @@ public class AdminService {
                 user.getStatus()
         );
     }
+
+    //return user and company details to frontend
+    @Transactional(readOnly = true)
+    public AdminUserDetailsResponse getUserDetails(UUID userId) {
+
+        User user = adminRepo.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "User not found"
+                ));
+
+        CompanyProfileResponse companyProfile =
+                companyProfileRepo.findByUserId(userId)
+                        .map(profile -> new CompanyProfileResponse(
+                                profile.getId(),
+                                user.getId(),
+                                profile.getCompanyName(),
+                                profile.getRegistrationNumber(),
+                                profile.getGstin(),
+                                profile.getPan(),
+                                profile.getAddress(),
+                                profile.getContactNumber(),
+                                profile.getWebsite(),
+                                profile.getSubmittedAt()
+                        ))
+                        .orElse(null);
+
+        return new AdminUserDetailsResponse(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getRole(),
+                user.getStatus(),
+                user.getCreatedAt(),
+                companyProfile
+        );
+    }
+
 
     private User findUser(UUID userId) {
 

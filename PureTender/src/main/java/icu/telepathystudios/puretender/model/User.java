@@ -36,9 +36,6 @@ public class User {
     @Column(nullable = false, length = 30)
     private Role role;
 
-    @Column(nullable = false)
-    private boolean enabled = true;
-
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 

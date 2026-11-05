@@ -53,7 +53,6 @@ public class AuthService {
         );
 
         user.setRole(role);
-        user.setEnabled(true);
 
         User savedUser = authRepo.saveAndFlush(user);
 
@@ -82,17 +81,17 @@ public class AuthService {
             );
         }
 
-        if (user.getStatus() == AccountStatus.PENDING) {
+        if (user.getStatus() == AccountStatus.REJECTED) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    "Your account is awaiting admin verification"
+                    "Your account registration has been rejected"
             );
         }
 
-        if (!user.isEnabled()) {
+        if (user.getStatus() == AccountStatus.DISABLED) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    "This account is disabled"
+                    "Your account has been disabled"
             );
         }
 
@@ -111,7 +110,8 @@ public class AuthService {
                 user.getId(),
                 user.getFullName(),
                 user.getEmail(),
-                user.getRole()
+                user.getRole(),
+                user.getStatus()
         );
     }
 
