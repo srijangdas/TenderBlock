@@ -9,6 +9,9 @@ Thumbs.db
 *.iws
 *.ipr
 
+PureTender/src/main/resources/application.properties
+Puretender/src/main/resources/crypto
+
 # =========================
 # Spring Boot / Java / Maven
 # =========================
