@@ -1,4 +1,4 @@
-package icu.telepathystudios.puretender.service;
+package icu.telepathystudios.puretender.service.role_man;
 
 import icu.telepathystudios.puretender.dto.admin.AdminActionResponse;
 import icu.telepathystudios.puretender.dto.admin.AdminUserResponse;

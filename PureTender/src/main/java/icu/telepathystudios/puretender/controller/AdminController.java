@@ -2,7 +2,7 @@ package icu.telepathystudios.puretender.controller;
 
 import icu.telepathystudios.puretender.dto.admin.AdminActionResponse;
 import icu.telepathystudios.puretender.dto.admin.AdminUserResponse;
-import icu.telepathystudios.puretender.service.AdminService;
+import icu.telepathystudios.puretender.service.role_man.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
