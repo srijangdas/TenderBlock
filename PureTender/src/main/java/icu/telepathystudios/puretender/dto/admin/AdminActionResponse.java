@@ -4,7 +4,7 @@ import icu.telepathystudios.puretender.model.AccountStatus;
 
 import java.util.UUID;
 
-public record AdminActionRequest(
+public record AdminActionResponse(
         UUID userId,
         String message,
         AccountStatus status) {}
