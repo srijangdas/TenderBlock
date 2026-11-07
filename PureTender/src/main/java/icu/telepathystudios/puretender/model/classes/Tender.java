@@ -56,4 +56,13 @@ public class Tender {
     protected void onCreate() {
         createdAt = Instant.now();
     }
+
+    @Column(length = 2000)
+    private String cancellationReason;
+
+    private Instant cancelledAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cancelled_by_user_id")
+    private User cancelledBy;
 }

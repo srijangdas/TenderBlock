@@ -1,6 +1,8 @@
 package icu.telepathystudios.puretender.service;
 
 
+import icu.telepathystudios.puretender.dto.audit.CancelTenderRequest;
+import icu.telepathystudios.puretender.dto.audit.TenderCancellationResponse;
 import icu.telepathystudios.puretender.dto.tender.CreateTenderRequest;
 import icu.telepathystudios.puretender.dto.tender.TenderResponse;
 import icu.telepathystudios.puretender.dto.tender.UpdateTenderRequest;
@@ -13,9 +15,11 @@ import icu.telepathystudios.puretender.repo.AuthRepo;
 import icu.telepathystudios.puretender.repo.tender.TenderRepo;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -167,6 +171,60 @@ public class TenderService {
                 ));
 
         return mapToResponse(tender);
+    }
+
+    @Transactional
+    public TenderCancellationResponse cancelTender(
+            UUID tenderId,
+            CancelTenderRequest request,
+            Authentication authentication
+    ) {
+
+        User authority = authRepo.findByEmail(authentication.getName())
+                .orElseThrow(() -> new AccessDeniedException("User not found"));
+
+        if (authority.getRole() != Role.AUTHORITY) {
+            throw new AccessDeniedException("Only authorities can cancel tenders");
+        }
+
+        if (authority.getStatus() != AccountStatus.VERIFIED) {
+            throw new AccessDeniedException("Your account is not verified");
+        }
+
+        Tender tender = tenderRepo.findById(tenderId)
+                .orElseThrow(() -> new AccessDeniedException("Tender not found"));
+
+        if (!tender.getAuthority().getId().equals(authority.getId())) {
+            throw new AccessDeniedException(
+                    "You can only cancel tenders created by your account"
+            );
+        }
+
+        if (tender.getStatus() != TenderStatus.PUBLISHED
+                && tender.getStatus() != TenderStatus.UNDER_EVALUATION) {
+
+            throw new IllegalStateException(
+                    "Only published or under-evaluation tenders can be cancelled"
+            );
+        }
+
+        Instant now = Instant.now();
+
+        tender.setStatus(TenderStatus.CANCELLED);
+        tender.setCancellationReason(request.reason().trim());
+        tender.setCancelledAt(now);
+        tender.setCancelledBy(authority);
+
+        tenderRepo.save(tender);
+
+        return new TenderCancellationResponse(
+                tender.getId(),
+                tender.getTitle(),
+                tender.getStatus().name(),
+                tender.getCancellationReason(),
+                authority.getFullName(),
+                tender.getCancelledAt()
+        );
     }
 
     // VALIDATE AUTHORITY

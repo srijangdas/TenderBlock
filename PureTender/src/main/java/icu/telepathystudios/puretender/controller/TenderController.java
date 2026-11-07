@@ -1,5 +1,7 @@
 package icu.telepathystudios.puretender.controller;
 
+import icu.telepathystudios.puretender.dto.audit.CancelTenderRequest;
+import icu.telepathystudios.puretender.dto.audit.TenderCancellationResponse;
 import icu.telepathystudios.puretender.dto.tender.CreateTenderRequest;
 import icu.telepathystudios.puretender.dto.tender.TenderResponse;
 import icu.telepathystudios.puretender.dto.tender.UpdateTenderRequest;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -100,5 +103,16 @@ public class TenderController {
 
         // Authority owner or any user viewing a published tender.
         return tenderService.getTender(tenderId, authentication);
+    }
+
+    @PatchMapping("/{tenderId}/cancel")
+    public ResponseEntity<TenderCancellationResponse> cancelTender(
+            @PathVariable UUID tenderId,
+            @Valid @RequestBody CancelTenderRequest request,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(
+                tenderService.cancelTender(tenderId, request, authentication)
+        );
     }
 }
