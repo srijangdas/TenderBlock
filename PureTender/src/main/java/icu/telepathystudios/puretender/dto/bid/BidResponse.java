@@ -14,11 +14,11 @@ public record BidResponse(
         UUID contractorId,
         String contractorName,
         BigDecimal quotedAmount,
-        String technicalProposal,
         BidStatus status,
         Instant submittedAt,
         Instant openedAt,
         Instant createdAt,
-        Instant updatedAt
+        Instant updatedAt,
+        boolean proposalUploaded
 
 ) {}

@@ -1,4 +1,4 @@
-package icu.telepathystudios.puretender.repo;
+package icu.telepathystudios.puretender.repo.tender;
 
 import icu.telepathystudios.puretender.model.classes.Tender;
 import icu.telepathystudios.puretender.model.enums.TenderStatus;

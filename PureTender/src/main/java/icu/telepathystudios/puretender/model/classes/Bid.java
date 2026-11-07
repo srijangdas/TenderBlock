@@ -40,9 +40,6 @@ public class Bid {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal quotedAmount;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String technicalProposal;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private BidStatus status = BidStatus.DRAFT;
@@ -56,6 +53,14 @@ public class Bid {
 
     @Column(nullable = false)
     private Instant updatedAt;
+
+    @OneToOne(
+            mappedBy = "bid",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private BidDocument proposal;
 
     @PrePersist
     protected void onCreate() {

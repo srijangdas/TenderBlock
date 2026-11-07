@@ -1,4 +1,4 @@
-package icu.telepathystudios.puretender.repo;
+package icu.telepathystudios.puretender.repo.bid;
 
 import icu.telepathystudios.puretender.model.classes.Bid;
 import icu.telepathystudios.puretender.model.enums.BidStatus;
@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -54,4 +56,19 @@ public interface BidRepo extends JpaRepository<Bid, UUID> {
             UUID tenderId,
             BidStatus status
     );
+
+    List<Bid> findAllByTender_Id(
+            UUID tenderId
+    );
+    List<Bid> findAllByTender_IdAndStatus(
+            UUID tenderId,
+            BidStatus status
+    );
+    List<Bid> findAllByTender_IdAndStatusIn(
+            UUID tenderId,
+            Collection<BidStatus> statuses
+    );
+
+
+
 }

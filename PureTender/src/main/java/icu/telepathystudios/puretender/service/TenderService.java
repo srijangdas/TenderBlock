@@ -10,7 +10,7 @@ import icu.telepathystudios.puretender.model.enums.AccountStatus;
 import icu.telepathystudios.puretender.model.enums.Role;
 import icu.telepathystudios.puretender.model.enums.TenderStatus;
 import icu.telepathystudios.puretender.repo.AuthRepo;
-import icu.telepathystudios.puretender.repo.TenderRepo;
+import icu.telepathystudios.puretender.repo.tender.TenderRepo;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
