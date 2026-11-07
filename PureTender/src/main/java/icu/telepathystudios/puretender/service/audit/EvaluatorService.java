@@ -1,4 +1,4 @@
-package icu.telepathystudios.puretender.service;
+package icu.telepathystudios.puretender.service.audit;
 
 import icu.telepathystudios.puretender.dto.bid.BidProposalDownload;
 import icu.telepathystudios.puretender.dto.bid.OpenBidsResponse;
@@ -566,9 +566,10 @@ public class EvaluatorService {
                 evaluation.getTechnicalScore(),
                 evaluation.getFinancialScore(),
                 evaluation.getTotalScore(),
-                winningBid.getContractor().getId(),
-                winningBid.getContractor().getFullName(),
+                award.getTriggeredBy().getId(),
+                award.getTriggeredBy().getFullName(),
                 award.getRemarks(),
+                award.getVerificationStatus(),
                 award.getAwardedAt()
         );
     }

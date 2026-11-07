@@ -7,7 +7,7 @@ import icu.telepathystudios.puretender.dto.evaluation.SaveBidEvaluationRequest;
 import icu.telepathystudios.puretender.dto.tender.AssignedTenderResponse;
 import icu.telepathystudios.puretender.dto.tender.EvaluatorBidResponse;
 import icu.telepathystudios.puretender.dto.tender.TenderAwardResponse;
-import icu.telepathystudios.puretender.service.EvaluatorService;
+import icu.telepathystudios.puretender.service.audit.EvaluatorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

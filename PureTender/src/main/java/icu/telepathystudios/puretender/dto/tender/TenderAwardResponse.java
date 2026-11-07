@@ -1,5 +1,7 @@
 package icu.telepathystudios.puretender.dto.tender;
 
+import icu.telepathystudios.puretender.model.enums.VerificationStatus;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
@@ -23,5 +25,6 @@ public record TenderAwardResponse(
         String triggeredByEvaluatorName,
 
         String remarks,
+        VerificationStatus verificationStatus,
         Instant awardedAt
 ) {}

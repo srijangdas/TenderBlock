@@ -1,5 +1,6 @@
 package icu.telepathystudios.puretender.model.classes;
 
+import icu.telepathystudios.puretender.model.enums.VerificationStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,6 +46,12 @@ public class TenderAward {
 
     @Column(length = 2000)
     private String remarks;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private VerificationStatus verificationStatus =
+            VerificationStatus.PENDING;
+
 
     @Column(nullable = false, updatable = false)
     private Instant awardedAt;

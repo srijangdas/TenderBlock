@@ -26,7 +26,6 @@ import java.util.UUID;
 public class AdminController {
     private final AdminService adminService;
 
-
     @GetMapping("/users/pending")
     public ResponseEntity<Page<AdminUserResponse>> getPendingUsers(
             @PageableDefault(size = 10) Pageable pageable) {
