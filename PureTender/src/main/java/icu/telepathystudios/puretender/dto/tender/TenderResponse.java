@@ -1,7 +1,7 @@
 package icu.telepathystudios.puretender.dto.tender;
 
 
-import icu.telepathystudios.puretender.model.TenderStatus;
+import icu.telepathystudios.puretender.model.enums.TenderStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;

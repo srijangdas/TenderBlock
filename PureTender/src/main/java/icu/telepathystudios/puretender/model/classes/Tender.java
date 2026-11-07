@@ -1,5 +1,6 @@
-package icu.telepathystudios.puretender.model;
+package icu.telepathystudios.puretender.model.classes;
 
+import icu.telepathystudios.puretender.model.enums.TenderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,6 +48,9 @@ public class Tender {
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
+
+    @Column(length = 1000)
+    private String rejectionReason;
 
     @PrePersist
     protected void onCreate() {

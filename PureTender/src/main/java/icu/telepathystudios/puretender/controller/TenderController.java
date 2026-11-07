@@ -3,8 +3,6 @@ package icu.telepathystudios.puretender.controller;
 import icu.telepathystudios.puretender.dto.tender.CreateTenderRequest;
 import icu.telepathystudios.puretender.dto.tender.TenderResponse;
 import icu.telepathystudios.puretender.dto.tender.UpdateTenderRequest;
-import icu.telepathystudios.puretender.model.User;
-import icu.telepathystudios.puretender.repo.AuthRepo;
 import icu.telepathystudios.puretender.service.TenderService;
 import jakarta.validation.Valid;
 
@@ -17,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 

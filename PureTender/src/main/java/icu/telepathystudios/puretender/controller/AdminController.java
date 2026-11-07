@@ -3,13 +3,18 @@ package icu.telepathystudios.puretender.controller;
 import icu.telepathystudios.puretender.dto.admin.AdminActionResponse;
 import icu.telepathystudios.puretender.dto.admin.AdminUserDetailsResponse;
 import icu.telepathystudios.puretender.dto.admin.AdminUserResponse;
+import icu.telepathystudios.puretender.dto.tender.ApproveTenderRequest;
+import icu.telepathystudios.puretender.dto.tender.RejectTenderRequest;
+import icu.telepathystudios.puretender.dto.tender.TenderResponse;
 import icu.telepathystudios.puretender.service.role_man.AdminService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -20,6 +25,7 @@ import java.util.UUID;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
     private final AdminService adminService;
+
 
     @GetMapping("/users/pending")
     public ResponseEntity<Page<AdminUserResponse>> getPendingUsers(
@@ -89,5 +95,34 @@ public class AdminController {
             @PathVariable UUID userId
     ) {
         return adminService.getUserDetails(userId);
+    }
+
+    // APPROVE TENDER AND ASSIGN EVALUATOR
+    @PatchMapping("/tenders/{tenderId}/approve")
+    public TenderResponse approveTender(
+            @PathVariable UUID tenderId,
+            @Valid @RequestBody ApproveTenderRequest request,
+            Authentication authentication
+    ) {
+
+        return adminService.approveTender(
+                tenderId,
+                request.evaluatorId(),
+                authentication
+        );
+    }
+
+
+    // REJECT TENDER
+    @PatchMapping("/tenders/{tenderId}/reject")
+    public TenderResponse rejectTender(
+            @PathVariable UUID tenderId,
+            @Valid @RequestBody RejectTenderRequest request
+    ) {
+
+        return adminService.rejectTender(
+                tenderId,
+                request.reason()
+        );
     }
 }

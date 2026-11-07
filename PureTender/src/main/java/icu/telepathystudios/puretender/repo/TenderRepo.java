@@ -1,7 +1,7 @@
 package icu.telepathystudios.puretender.repo;
 
-import icu.telepathystudios.puretender.model.Tender;
-import icu.telepathystudios.puretender.model.TenderStatus;
+import icu.telepathystudios.puretender.model.classes.Tender;
+import icu.telepathystudios.puretender.model.enums.TenderStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

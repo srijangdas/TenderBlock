@@ -4,11 +4,10 @@ package icu.telepathystudios.puretender.controller;
 import icu.telepathystudios.puretender.dto.auth.AuthResponse;
 import icu.telepathystudios.puretender.dto.auth.LoginRequest;
 import icu.telepathystudios.puretender.dto.auth.RegisterRequest;
-import icu.telepathystudios.puretender.model.Role;
+import icu.telepathystudios.puretender.model.enums.Role;
 import icu.telepathystudios.puretender.service.auth.AuthService;
 import jakarta.validation.Valid;
 
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

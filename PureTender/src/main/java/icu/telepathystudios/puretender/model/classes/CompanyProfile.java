@@ -1,4 +1,4 @@
-package icu.telepathystudios.puretender.model;
+package icu.telepathystudios.puretender.model.classes;
 
 import jakarta.persistence.*;
 import lombok.Getter;

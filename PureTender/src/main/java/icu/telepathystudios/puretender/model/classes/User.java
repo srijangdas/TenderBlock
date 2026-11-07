@@ -1,5 +1,7 @@
-package icu.telepathystudios.puretender.model;
+package icu.telepathystudios.puretender.model.classes;
 
+import icu.telepathystudios.puretender.model.enums.AccountStatus;
+import icu.telepathystudios.puretender.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 

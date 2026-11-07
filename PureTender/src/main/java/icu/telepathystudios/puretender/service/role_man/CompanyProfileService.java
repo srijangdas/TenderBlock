@@ -2,10 +2,10 @@ package icu.telepathystudios.puretender.service.role_man;
 
 import icu.telepathystudios.puretender.dto.company.CompanyProfileRequest;
 import icu.telepathystudios.puretender.dto.company.CompanyProfileResponse;
-import icu.telepathystudios.puretender.model.AccountStatus;
-import icu.telepathystudios.puretender.model.CompanyProfile;
-import icu.telepathystudios.puretender.model.Role;
-import icu.telepathystudios.puretender.model.User;
+import icu.telepathystudios.puretender.model.enums.AccountStatus;
+import icu.telepathystudios.puretender.model.classes.CompanyProfile;
+import icu.telepathystudios.puretender.model.enums.Role;
+import icu.telepathystudios.puretender.model.classes.User;
 import icu.telepathystudios.puretender.repo.AuthRepo;
 import icu.telepathystudios.puretender.repo.CompanyProfileRepo;
 import org.springframework.security.core.Authentication;

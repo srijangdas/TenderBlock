@@ -1,8 +1,8 @@
 package icu.telepathystudios.puretender.dto.auth;
 
 
-import icu.telepathystudios.puretender.model.AccountStatus;
-import icu.telepathystudios.puretender.model.Role;
+import icu.telepathystudios.puretender.model.enums.AccountStatus;
+import icu.telepathystudios.puretender.model.enums.Role;
 
 import java.util.UUID;
 

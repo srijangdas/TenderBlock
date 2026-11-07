@@ -4,7 +4,11 @@ package icu.telepathystudios.puretender.service;
 import icu.telepathystudios.puretender.dto.tender.CreateTenderRequest;
 import icu.telepathystudios.puretender.dto.tender.TenderResponse;
 import icu.telepathystudios.puretender.dto.tender.UpdateTenderRequest;
-import icu.telepathystudios.puretender.model.*;
+import icu.telepathystudios.puretender.model.classes.Tender;
+import icu.telepathystudios.puretender.model.classes.User;
+import icu.telepathystudios.puretender.model.enums.AccountStatus;
+import icu.telepathystudios.puretender.model.enums.Role;
+import icu.telepathystudios.puretender.model.enums.TenderStatus;
 import icu.telepathystudios.puretender.repo.AuthRepo;
 import icu.telepathystudios.puretender.repo.TenderRepo;
 

@@ -1,6 +1,6 @@
 package icu.telepathystudios.puretender.repo;
 
-import icu.telepathystudios.puretender.model.CompanyProfile;
+import icu.telepathystudios.puretender.model.classes.CompanyProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

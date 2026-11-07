@@ -1,4 +1,4 @@
-package icu.telepathystudios.puretender.model;
+package icu.telepathystudios.puretender.model.enums;
 
 public enum AccountStatus {
     PENDING,

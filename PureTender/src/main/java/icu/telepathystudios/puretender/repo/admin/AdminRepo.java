@@ -1,7 +1,7 @@
-package icu.telepathystudios.puretender.repo;
+package icu.telepathystudios.puretender.repo.admin;
 
-import icu.telepathystudios.puretender.model.AccountStatus;
-import icu.telepathystudios.puretender.model.User;
+import icu.telepathystudios.puretender.model.enums.AccountStatus;
+import icu.telepathystudios.puretender.model.classes.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
