@@ -1,0 +1,1 @@
+export default function FormField({label,name,required,children}){return <div className="form-field"><label htmlFor={name}>{label}{required&&<span className="required-mark"> *</span>}</label>{children}</div>}
