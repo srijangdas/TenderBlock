@@ -142,6 +142,23 @@ public class FabricService {
         return "Asset created successfully with ID: " + assetId;
     }
 
+    public void createIntegrityRecord(
+            String recordId,
+            String recordType,
+            String parentId,
+            String payloadHash
+    ) throws Exception {
+        contract.submitTransaction(
+                "CreateRecord", recordId, recordType, parentId, payloadHash);
+    }
+
+    public void updateIntegrityRecord(
+            String recordId,
+            String payloadHash
+    ) throws Exception {
+        contract.submitTransaction("UpdateRecord", recordId, payloadHash);
+    }
+
     @PreDestroy
     public void shutdown() {
         if (gateway != null) {

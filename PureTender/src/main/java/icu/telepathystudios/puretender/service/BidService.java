@@ -18,6 +18,7 @@ import icu.telepathystudios.puretender.repo.bid.BidDocumentRepo;
 import icu.telepathystudios.puretender.repo.bid.BidRepo;
 import icu.telepathystudios.puretender.repo.tender.TenderRepo;
 import icu.telepathystudios.puretender.service.blockchain.DocumentHashService;
+import icu.telepathystudios.puretender.service.blockchain.BlockchainRecordService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -42,6 +43,7 @@ public class BidService {
     private final AuthRepo authRepo;
     private final BidDocumentRepo bidDocumentRepo;
     private final DocumentHashService documentHashService;
+    private final BlockchainRecordService blockchainRecordService;
 
     // CREATE DRAFT BID
     @Transactional
@@ -89,7 +91,7 @@ public class BidService {
 
         Bid bid = getContractorBid(bidId, contractor.getId());
 
-        if (isEditableBid(bid)) {
+        if (!isEditableBid(bid)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Only draft or submitted bids can be updated"
@@ -100,7 +102,11 @@ public class BidService {
 
         bid.setQuotedAmount(request.quotedAmount());
 
-        return mapToResponse(bidRepo.save(bid));
+        Bid savedBid = bidRepo.save(bid);
+        if (savedBid.getStatus() == BidStatus.SUBMITTED) {
+            blockchainRecordService.updateBidRecord(savedBid, null);
+        }
+        return mapToResponse(savedBid);
     }
 
     // SUBMIT BID
@@ -133,7 +139,9 @@ public class BidService {
         bid.setStatus(BidStatus.SUBMITTED);
         bid.setSubmittedAt(Instant.now());
 
-        return mapToResponse(bidRepo.save(bid));
+        Bid submittedBid = bidRepo.save(bid);
+        blockchainRecordService.createBidRecord(submittedBid);
+        return mapToResponse(submittedBid);
     }
 
     // GET MY BIDS
@@ -245,8 +253,8 @@ public class BidService {
     }
 
     private boolean isEditableBid(Bid bid) {
-        return bid.getStatus() != BidStatus.DRAFT
-                && bid.getStatus() != BidStatus.SUBMITTED;
+        return bid.getStatus() == BidStatus.DRAFT
+                || bid.getStatus() == BidStatus.SUBMITTED;
     }
 
     @Transactional
@@ -260,7 +268,7 @@ public class BidService {
 
         Bid bid = getContractorBid(bidId, contractor.getId());
 
-        if (isEditableBid(bid)) {
+        if (!isEditableBid(bid)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Proposal can only be uploaded to a draft or submitted bid"
@@ -294,7 +302,10 @@ public class BidService {
         document.setFileData(fileData);
         document.setSha256Hash(hash);
 
-        bidDocumentRepo.save(document);
+        BidDocument savedDocument = bidDocumentRepo.save(document);
+        if (bid.getStatus() == BidStatus.SUBMITTED) {
+            blockchainRecordService.updateBidRecord(bid, savedDocument);
+        }
     }
 
     @Transactional(readOnly = true)
