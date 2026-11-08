@@ -1,0 +1,42 @@
+export const SAMPLE_TENDERS = [
+  {
+    id: 'TND-1001', title: 'Road Construction and Drainage', department: 'City Municipal Corporation',
+    sector: 'Infrastructure', budget: 4800000, submissionDeadline: '2027-02-25T17:00:00', status: 'PUBLISHED',
+    description: 'Construction of a 10 km access road with drainage, street lighting and associated safety works.',
+    eligibilityCriteria: 'At least 3 years of similar civil works experience; valid contractor registration; adequate financial capacity.',
+    requiredDocuments: 'Registration certificate, technical proposal, completion certificates, financial statements',
+    createdBy: 'Municipal Procurement Office',
+  },
+  {
+    id: 'TND-1002', title: 'IT System Upgrade and Security Audit', department: 'State Transport Department',
+    sector: 'Information Technology', budget: 2400000, submissionDeadline: '2027-03-30T17:00:00', status: 'PUBLISHED',
+    description: 'Upgrade internal computing infrastructure, implement endpoint security and conduct a full system audit.',
+    eligibilityCriteria: 'Registered IT services provider; 2 comparable projects; certified information-security personnel.',
+    requiredDocuments: 'Company registration, prior work orders, technical approach, security certifications',
+    createdBy: 'State IT Cell',
+  },
+  {
+    id: 'TND-1003', title: 'Hospital Diagnostic Equipment Supply', department: 'District Health Directorate',
+    sector: 'Healthcare', budget: 7200000, submissionDeadline: '2027-04-12T17:00:00', status: 'PUBLISHED',
+    description: 'Procurement, delivery and installation of diagnostic equipment for district hospitals.',
+    eligibilityCriteria: 'Authorised medical equipment distributor; documented warranty and maintenance capabilities.',
+    requiredDocuments: 'Authorisation letter, compliance certificates, warranty agreement, catalogues',
+    createdBy: 'District Health Directorate',
+  },
+  {
+    id: 'TND-1004', title: 'Public Library Renovation', department: 'Public Works Department',
+    sector: 'Construction', budget: 3100000, submissionDeadline: '2027-05-20T17:00:00', status: 'PUBLISHED',
+    description: 'Interior refurbishment, electrical renovation and accessibility improvements for the central library.',
+    eligibilityCriteria: 'Licensed construction contractor with previous public building experience.',
+    requiredDocuments: 'Contractor licence, work portfolio, tax documents, timeline',
+    createdBy: 'Public Works Department',
+  },
+  {
+    id: 'TND-1005', title: 'Classroom Computers and Networking', department: 'Education Board',
+    sector: 'Information Technology', budget: 1800000, submissionDeadline: '2027-06-04T17:00:00', status: 'PUBLISHED',
+    description: 'Supply and install desktop computers and LAN equipment across teaching labs.',
+    eligibilityCriteria: 'OEM partner or authorised reseller; onsite service availability; 2 years of deployment experience.',
+    requiredDocuments: 'OEM authorisation, quote, deployment plan, GST or relevant tax registration',
+    createdBy: 'Education Board',
+  },
+];
