@@ -96,6 +96,13 @@ public class AdminController {
         return adminService.getUserDetails(userId);
     }
 
+    @GetMapping("/tenders/pending")
+    public ResponseEntity<Page<TenderResponse>> getPendingTenders(
+            @PageableDefault(size = 10) Pageable pageable) {
+
+        return ResponseEntity.ok(adminService.getPendingTenders(pageable));
+    }
+
     // APPROVE TENDER AND ASSIGN EVALUATOR
     @PatchMapping("/tenders/{tenderId}/approve")
     public TenderResponse approveTender(
