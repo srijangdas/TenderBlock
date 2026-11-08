@@ -2,21 +2,14 @@ package icu.telepathystudios.puretender.service.audit;
 
 import icu.telepathystudios.puretender.dto.audit.IntegrityReportResponse;
 import icu.telepathystudios.puretender.dto.audit.ResolveIntegrityReportRequest;
-import icu.telepathystudios.puretender.dto.audit.AwardHeldTenderRequest;
-import icu.telepathystudios.puretender.dto.tender.TenderAwardResponse;
-import icu.telepathystudios.puretender.model.classes.Bid;
-import icu.telepathystudios.puretender.model.classes.BidEvaluation;
 import icu.telepathystudios.puretender.model.classes.IntegrityReport;
 import icu.telepathystudios.puretender.model.classes.Tender;
 import icu.telepathystudios.puretender.model.classes.TenderAward;
 import icu.telepathystudios.puretender.model.classes.User;
 import icu.telepathystudios.puretender.model.enums.*;
-import icu.telepathystudios.puretender.repo.bid.BidEvaluationRepo;
-import icu.telepathystudios.puretender.repo.bid.BidRepo;
 import icu.telepathystudios.puretender.repo.AuthRepo;
 import icu.telepathystudios.puretender.repo.IntegrityReportRepo;
 import icu.telepathystudios.puretender.repo.tender.TenderAwardRepo;
-import icu.telepathystudios.puretender.repo.tender.TenderRepo;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -38,9 +31,6 @@ public class AuditorService {
     private final AuthRepo authRepo;
     private final IntegrityReportRepo integrityReportRepo;
     private final TenderAwardRepo tenderAwardRepo;
-    private final TenderRepo tenderRepo;
-    private final BidRepo bidRepo;
-    private final BidEvaluationRepo bidEvaluationRepo;
 
     // 1. List all integrity reports
     @Transactional(readOnly = true)
@@ -95,6 +85,11 @@ public class AuditorService {
         report.setAssignedAuditor(auditor);
         report.setStatus(IntegrityReportStatus.UNDER_REVIEW);
 
+        updateAwardVerificationStatus(
+                report.getTender().getId(),
+                VerificationStatus.UNDER_AUDIT
+        );
+
         IntegrityReport saved = integrityReportRepo.save(report);
 
         return mapToIntegrityReportResponse(saved);
@@ -136,123 +131,28 @@ public class AuditorService {
 
             report.setStatus(IntegrityReportStatus.RESOLVED);
 
-            Tender tender = report.getTender();
-            if (tender.getStatus() != TenderStatus.ON_HOLD
-                    || tenderAwardRepo.existsByTender_Id(tenderId)) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "Only a flagged, unawarded tender can be voided by this workflow."
-                );
-            }
+            // Confirmed integrity violation.
+            updateAwardVerificationStatus(
+                    tenderId,
+                    VerificationStatus.FAILED
+            );
 
-            tender.setStatus(TenderStatus.VOIDED);
+            Tender tender = report.getTender();
+
+            if (tender.getStatus() == TenderStatus.AWARDED) {
+                tender.setStatus(TenderStatus.VOIDED);
+            }
 
         } else {
 
             report.setStatus(IntegrityReportStatus.DISMISSED);
 
-            if (report.getTender().getStatus() != TenderStatus.ON_HOLD) {
-                throw new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "The tender is no longer on hold."
-                );
-            }
+            updateVerificationAfterDismissal(tenderId);
         }
 
         IntegrityReport saved = integrityReportRepo.save(report);
 
         return mapToIntegrityReportResponse(saved);
-    }
-
-    @Transactional
-    public TenderAwardResponse awardHeldTender(
-            UUID tenderId,
-            AwardHeldTenderRequest request,
-            Authentication authentication
-    ) {
-        User auditor = getVerifiedAuditor(authentication);
-        Tender tender = tenderRepo.findById(tenderId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Tender not found."
-                ));
-
-        if (tender.getStatus() != TenderStatus.ON_HOLD
-                || tenderAwardRepo.existsByTender_Id(tenderId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Only a held, unawarded tender can be awarded through this workflow."
-            );
-        }
-
-        if (integrityReportRepo.existsByTender_IdAndStatusIn(
-                tenderId,
-                List.of(IntegrityReportStatus.OPEN, IntegrityReportStatus.UNDER_REVIEW))) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "All integrity reports must be resolved before the tender can be awarded."
-            );
-        }
-
-        Bid winningBid = bidRepo.findById(request.winningBidId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Winning bid not found."
-                ));
-        if (!winningBid.getTender().getId().equals(tenderId)) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "The selected bid does not belong to this tender."
-            );
-        }
-
-        BidEvaluation winningEvaluation = bidEvaluationRepo.findByBid_Id(winningBid.getId())
-                .filter(evaluation -> evaluation.getStatus() == EvaluationStatus.FINALIZED)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "The selected bid must have a finalized evaluation."
-                ));
-        if (winningBid.getStatus() != BidStatus.EVALUATED) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "The selected bid is not ready to be awarded."
-            );
-        }
-
-        List<Bid> awardableBids = bidRepo.findAllByTender_IdAndStatusIn(
-                tenderId,
-                List.of(BidStatus.SUBMITTED, BidStatus.OPENED,
-                        BidStatus.UNDER_EVALUATION, BidStatus.EVALUATED)
-        );
-        if (awardableBids.stream().anyMatch(bid -> bid.getStatus() != BidStatus.EVALUATED)) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Every submitted bid must be evaluated before the tender can be awarded."
-            );
-        }
-
-        List<Bid> evaluatedBids = awardableBids;
-        for (Bid bid : evaluatedBids) {
-            bid.setStatus(bid.getId().equals(winningBid.getId())
-                    ? BidStatus.SELECTED : BidStatus.NOT_SELECTED);
-        }
-        bidRepo.saveAll(evaluatedBids);
-
-        TenderAward award = new TenderAward();
-        award.setTender(tender);
-        award.setWinningBid(winningBid);
-        award.setTriggeredBy(auditor);
-        award.setRemarks(request.remarks());
-        TenderAward savedAward = tenderAwardRepo.save(award);
-        tender.setStatus(TenderStatus.AWARDED);
-        tenderRepo.save(tender);
-
-        return new TenderAwardResponse(
-                savedAward.getId(), tender.getId(), tender.getTitle(),
-                winningBid.getId(), winningBid.getContractor().getFullName(),
-                winningBid.getQuotedAmount(), winningEvaluation.getTechnicalScore(),
-                winningEvaluation.getFinancialScore(), winningEvaluation.getTotalScore(),
-                auditor.getId(), auditor.getFullName(), savedAward.getRemarks(),
-                savedAward.getVerificationStatus(), savedAward.getAwardedAt()
-        );
     }
 
 
@@ -296,6 +196,61 @@ public class AuditorService {
                         HttpStatus.NOT_FOUND,
                         "Integrity report not found."
                 ));
+    }
+
+    private void updateAwardVerificationStatus(
+            UUID tenderId,
+            VerificationStatus status
+    ) {
+        TenderAward award = tenderAwardRepo.findByTender_Id(tenderId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Tender award record not found."
+                ));
+
+        // Once a confirmed failure is recorded, don't downgrade it.
+        if (award.getVerificationStatus() == VerificationStatus.FAILED &&
+                status != VerificationStatus.FAILED) {
+            return;
+        }
+
+        award.setVerificationStatus(status);
+        tenderAwardRepo.save(award);
+    }
+
+    private void updateVerificationAfterDismissal(UUID tenderId) {
+
+        TenderAward award = tenderAwardRepo.findByTender_Id(tenderId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Tender award record not found."
+                ));
+
+        if (award.getVerificationStatus() == VerificationStatus.FAILED) {
+            return;
+        }
+
+        boolean hasOpenReports =
+                integrityReportRepo.existsByTender_IdAndStatus(
+                        tenderId,
+                        IntegrityReportStatus.OPEN
+                );
+
+        boolean hasReportsUnderReview =
+                integrityReportRepo.existsByTender_IdAndStatus(
+                        tenderId,
+                        IntegrityReportStatus.UNDER_REVIEW
+                );
+
+        if (hasReportsUnderReview) {
+            award.setVerificationStatus(VerificationStatus.UNDER_AUDIT);
+        } else if (hasOpenReports) {
+            award.setVerificationStatus(VerificationStatus.DISCREPANCY_FOUND);
+        } else {
+            award.setVerificationStatus(VerificationStatus.VERIFIED);
+        }
+
+        tenderAwardRepo.save(award);
     }
 
     private IntegrityReportResponse mapToIntegrityReportResponse(

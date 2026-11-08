@@ -46,7 +46,7 @@ public class BidController {
         );
     }
 
-    // UPDATE DRAFT OR SUBMITTED BID
+    // UPDATE DRAFT BID
     @PutMapping("/{bidId}")
     public BidResponse updateBid(
             @PathVariable UUID bidId,
