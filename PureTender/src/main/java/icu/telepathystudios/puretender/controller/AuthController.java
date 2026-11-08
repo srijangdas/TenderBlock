@@ -4,6 +4,7 @@ package icu.telepathystudios.puretender.controller;
 import icu.telepathystudios.puretender.dto.auth.AuthResponse;
 import icu.telepathystudios.puretender.dto.auth.LoginRequest;
 import icu.telepathystudios.puretender.dto.auth.RegisterRequest;
+import icu.telepathystudios.puretender.model.enums.Role;
 import icu.telepathystudios.puretender.service.auth.AuthService;
 import jakarta.validation.Valid;
 
@@ -19,11 +20,11 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/register")
+    @PostMapping("/register/{role}")
     public ResponseEntity<AuthResponse> register(
-            @Valid @RequestBody RegisterRequest request) {
+            @Valid @RequestBody RegisterRequest request, @PathVariable Role role) {
 
-        AuthResponse response = authService.register(request);
+        AuthResponse response = authService.register(request, role);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

@@ -1,5 +1,7 @@
-package icu.telepathystudios.puretender.model;
+package icu.telepathystudios.puretender.model.classes;
 
+import icu.telepathystudios.puretender.model.enums.AccountStatus;
+import icu.telepathystudios.puretender.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,9 +38,6 @@ public class User {
     @Column(nullable = false, length = 30)
     private Role role;
 
-    @Column(nullable = false)
-    private boolean enabled = true;
-
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -46,4 +45,8 @@ public class User {
     protected void onCreate() {
         createdAt = Instant.now();
     }
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountStatus status = AccountStatus.PENDING;
 }
