@@ -17,6 +17,7 @@ import icu.telepathystudios.puretender.repo.AuthRepo;
 import icu.telepathystudios.puretender.repo.bid.BidDocumentRepo;
 import icu.telepathystudios.puretender.repo.bid.BidRepo;
 import icu.telepathystudios.puretender.repo.tender.TenderRepo;
+import icu.telepathystudios.puretender.service.blockchain.DocumentHashService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -29,10 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.HexFormat;
 import java.util.UUID;
 
 @Service
@@ -43,6 +41,7 @@ public class BidService {
     private final TenderRepo tenderRepo;
     private final AuthRepo authRepo;
     private final BidDocumentRepo bidDocumentRepo;
+    private final DocumentHashService documentHashService;
 
     // CREATE DRAFT BID
     @Transactional
@@ -283,7 +282,7 @@ public class BidService {
             );
         }
 
-        String hash = calculateSha256(fileData);
+        String hash = documentHashService.sha256(fileData);
 
         BidDocument document = bidDocumentRepo
                 .findByBid_Id(bidId)
@@ -313,6 +312,8 @@ public class BidService {
                         HttpStatus.NOT_FOUND,
                         "Proposal PDF not found"
                 ));
+
+        verifyDocumentHash(document);
 
         return new BidProposalDownload(
                 document.getFileData(),
@@ -367,17 +368,12 @@ public class BidService {
             );
         }
     }
-    private String calculateSha256(byte[] data) {
-
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-
-            return HexFormat.of().formatHex(digest.digest(data));
-
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(
-                    "SHA-256 algorithm is unavailable",
-                    e
+    private void verifyDocumentHash(BidDocument document) {
+        if (!documentHashService.matches(
+                document.getFileData(), document.getSha256Hash())) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Stored proposal PDF failed its integrity check"
             );
         }
     }
