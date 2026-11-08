@@ -78,7 +78,7 @@ public class BidService {
         return mapToResponse(bidRepo.save(bid));
     }
 
-    // UPDATE DRAFT BID
+    // UPDATE DRAFT OR SUBMITTED BID
     @Transactional
     public BidResponse updateBid(
             UUID bidId,
@@ -90,10 +90,10 @@ public class BidService {
 
         Bid bid = getContractorBid(bidId, contractor.getId());
 
-        if (bid.getStatus() != BidStatus.DRAFT) {
+        if (isEditableBid(bid)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Only draft bids can be updated"
+                    "Only draft or submitted bids can be updated"
             );
         }
 
@@ -245,6 +245,11 @@ public class BidService {
         }
     }
 
+    private boolean isEditableBid(Bid bid) {
+        return bid.getStatus() != BidStatus.DRAFT
+                && bid.getStatus() != BidStatus.SUBMITTED;
+    }
+
     @Transactional
     public void uploadProposal(
             UUID bidId,
@@ -256,10 +261,10 @@ public class BidService {
 
         Bid bid = getContractorBid(bidId, contractor.getId());
 
-        if (bid.getStatus() != BidStatus.DRAFT) {
+        if (isEditableBid(bid)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Proposal can only be uploaded to a draft bid"
+                    "Proposal can only be uploaded to a draft or submitted bid"
             );
         }
 

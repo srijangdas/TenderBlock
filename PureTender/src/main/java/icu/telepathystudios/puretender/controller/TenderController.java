@@ -95,8 +95,9 @@ public class TenderController {
     ) {
 
         // Admin and Auditor can inspect tender details.
-        if (authentication.getAuthorities().toString().equals("ADMIN")
-                || authentication.getAuthorities().toString().equals("AUDITOR")) {
+        if (authentication.getAuthorities().stream().anyMatch(authority ->
+                authority.getAuthority().equals("ROLE_ADMIN")
+                        || authority.getAuthority().equals("ROLE_AUDITOR"))) {
 
             return tenderService.getTenderForAdminOrAuditor(tenderId);
         }
