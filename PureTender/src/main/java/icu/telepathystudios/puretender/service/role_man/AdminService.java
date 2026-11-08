@@ -55,16 +55,6 @@ public class AdminService {
                 .map(this::toResponse);
     }
 
-    // View submitted tenders awaiting admin review
-    @Transactional(readOnly = true)
-    public Page<TenderResponse> getPendingTenders(Pageable pageable) {
-
-        return tenderRepo.findAllByStatusOrderByCreatedAtDesc(
-                TenderStatus.SUBMITTED,
-                pageable
-        ).map(this::mapTenderToResponse);
-    }
-
     // View individual user details
     @Transactional(readOnly = true)
     public AdminUserResponse getUser(UUID userId) {

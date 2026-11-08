@@ -2,8 +2,6 @@ package icu.telepathystudios.puretender.controller;
 
 import icu.telepathystudios.puretender.dto.audit.IntegrityReportResponse;
 import icu.telepathystudios.puretender.dto.audit.ResolveIntegrityReportRequest;
-import icu.telepathystudios.puretender.dto.audit.AwardHeldTenderRequest;
-import icu.telepathystudios.puretender.dto.tender.TenderAwardResponse;
 import icu.telepathystudios.puretender.service.audit.AuditorService;
 import jakarta.validation.Valid;
 
@@ -73,17 +71,6 @@ public class AuditorController {
                         request,
                         authentication
                 )
-        );
-    }
-
-    @PostMapping("/tenders/{tenderId}/award")
-    public ResponseEntity<TenderAwardResponse> awardHeldTender(
-            @PathVariable UUID tenderId,
-            @Valid @RequestBody AwardHeldTenderRequest request,
-            Authentication authentication
-    ) {
-        return ResponseEntity.ok(
-                auditorService.awardHeldTender(tenderId, request, authentication)
         );
     }
 }

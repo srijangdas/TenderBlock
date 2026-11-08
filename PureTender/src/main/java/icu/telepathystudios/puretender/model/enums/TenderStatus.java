@@ -5,7 +5,6 @@ public enum TenderStatus {
     PUBLISHED,
     REJECTED,
     UNDER_EVALUATION,
-    ON_HOLD,
     AWARDED,
     CANCELLED,
     VOIDED
