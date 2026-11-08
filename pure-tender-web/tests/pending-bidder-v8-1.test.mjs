@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+const bidder = readFileSync(new URL('../src/pages/BidderPage.jsx', import.meta.url), 'utf8');
+const edit = readFileSync(new URL('../src/pages/EditBidPage.jsx', import.meta.url), 'utf8');
+assert.match(bidder, /const bidHistoryRestricted = teamMode && user\?\.verified !== true;/);
+assert.match(bidder, /if \(bidHistoryRestricted\) \{[\s\S]*?setOwnBids\(\[\]\);[\s\S]*?return \(\) => \{ active = false; \};/);
+assert.match(bidder, /if \(bidHistoryRestricted\) \{[\s\S]*?setBids\(\[\]\);/);
+assert.match(bidder, /!bidHistoryRestricted && <div className="tb-card overflow-x-auto">/);
+assert.match(edit, /user\?\.verified !== true/);
+console.log('Pending Bidder frontend guards verified');

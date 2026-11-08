@@ -1,0 +1,50 @@
+// Run with: node tests/demo-workflows.mjs
+// Import the original source after resolving Vite-style extensionless imports in a temp directory.
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import assert from 'node:assert/strict';
+import { pathToFileURL } from 'node:url';
+const root=path.resolve(import.meta.dirname,'..');
+const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'tenderblock-demo-test-'));
+for(const rel of ['api/demoStore.js','api/dtos.js','data/sampleTenders.js']){
+  const dest=path.join(tmp,'src',rel);fs.mkdirSync(path.dirname(dest),{recursive:true});
+  let code=fs.readFileSync(path.join(root,'src',rel),'utf8');code=code.replace(/from ('|\")((?:\.\.?\/)[^'\"]+)(\1)/g,(_m,q,p)=>`from ${q}${p}.js${q}`);
+  fs.writeFileSync(dest,code);
+}
+fs.writeFileSync(path.join(tmp,'package.json'),'{"type":"module"}');
+const values=new Map();globalThis.localStorage={getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};
+const d=await import(pathToFileURL(path.join(tmp,'src/api/demoStore.js')).href);
+const bidder={id:'demo-bidder',role:'BIDDER',fullName:'Bidder'},lister={id:'demo-lister',role:'LISTER',fullName:'Lister',organizationName:'Metro'},admin={id:'demo-admin',role:'ADMIN'},evalUser={id:'demo-evaluator',role:'EVALUATOR'},auditor={id:'demo-auditor',role:'AUDITOR'};
+d.demoReset();
+const registration={fullName:'New user',email:'new@example.com',password:'Password123',role:'LISTER',industry:'Education',organizationName:'New company'};
+await d.demoRegister(registration);
+const {user:newLister}=await d.demoLogin({email:'new@example.com',password:'Password123'});
+assert.equal(newLister.verified,false);
+await assert.rejects(Promise.resolve().then(()=>d.demoCreateTender(newLister,{title:'Test',submissionDeadline:'2027-01-01'})),/verify/i);
+assert.equal(d.demoAdminQueue(admin).users.length,1);
+d.demoVerifyUser(admin,newLister.id);
+const after=await d.demoLogin({email:'new@example.com',password:'Password123'});
+assert.equal(after.user.verified,true);
+const draft=d.demoCreateTender(lister,{title:'Test tender',description:'Test',submissionDeadline:'2027-06-01T00:00:00Z',budget:5000,sector:'Infrastructure',department:'Dept',eligibilityCriteria:'Eligible',requiredDocuments:'PDF'});
+assert.equal(draft.status,'DRAFT');
+assert.equal(d.demoUpdateTender(lister,draft.id,{title:'Edited title',submissionDeadline:'2027-06-01T00:00:00Z'}).title,'Edited title');
+d.demoRequestApproval(lister,draft.id);
+await d.demoApproveTender(admin,draft.id,auditor.id);
+assert(d.demoGetTenders().some(x=>x.id===draft.id));
+const mkfile=(value)=>({name:'demo.pdf',type:'application/pdf',size:value.length,arrayBuffer:async()=>new TextEncoder().encode(value).buffer});
+const f=mkfile('pdf testing bytes');
+const bid=await d.demoSubmitBid(bidder,draft.id,{amount:4000,proposalSummary:'Example',remarks:'',evidence:f,proposal:f});
+assert.equal(bid.status,'SUBMITTED');
+const verified=await d.demoVerifyBidFile(auditor,bid.id,f,'proposal');assert.equal(verified.matches,true);
+await d.demoUpdateBid(bidder,bid.id,{amount:3800,proposalSummary:'Updated',remarks:''});
+assert.equal(d.demoMyBids(bidder).find(x=>x.id===bid.id).amount,3800);
+const historical=d.demoGetTender('TND-ARCHIVE');assert(historical);
+d.demoCloseTender(admin,historical.id);
+d.demoEvaluateBid(evalUser,'BID-ARCHIVE',86,'Good');
+assert.equal(d.demoFinalizeTender(admin,historical.id).status,'AWARDED');
+assert.equal(d.demoAuditQueue(auditor).length>=1,true);
+await assert.rejects(Promise.resolve().then(()=>d.demoCreateTender(bidder,{})),/permission/i);
+await assert.rejects(Promise.resolve().then(()=>d.demoFinalizeTender(bidder,historical.id)),/permission/i);
+console.log('PASS: registration, verification, tender draft/edit/approval, bid/edit, local SHA256, evaluation, audit, award, role restrictions');
+fs.rmSync(tmp,{recursive:true,force:true});

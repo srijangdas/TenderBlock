@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import { sessionFromRegistration } from '../src/api/authSession.js';
+const token='fake-backend-token-for-test-only';
+const pending = sessionFromRegistration({accessToken:token,role:'CONTRACTOR',userId:'user-123',fullName:'New Bidder',email:'bidder@test.example',accountStatus:'PENDING',profileSaved:true,companyProfile:{companyName:'Example Ltd',contactNumber:'1234567890'}});
+assert.equal(pending.token, token);
+assert.equal(pending.user.role, 'BIDDER');
+assert.equal(pending.user.accountStatus, 'PENDING');
+assert.equal(pending.user.organizationName, 'Example Ltd');
+assert.equal(pending.user.profileMissing, false);
+const partial = sessionFromRegistration({accessToken:token,role:'AUTHORITY',userId:'user-456',fullName:'New Lister',email:'lister@test.example',accountStatus:'PENDING',profileSaved:false,profileWarning:'Company profile was not saved'});
+assert.equal(partial.user.role, 'LISTER');
+assert.equal(partial.user.profileMissing, true);
+assert.match(partial.user.profileLoadError, /not saved/);
+assert.throws(()=>sessionFromRegistration({role:'CONTRACTOR'}),/without an access token/);
+assert.throws(()=>sessionFromRegistration({accessToken:token,role:'ADMIN'}),/unexpected role/);
+console.log('PASS: v8 registration JWT session, PENDING status, company-profile recovery.');
