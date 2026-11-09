@@ -13,6 +13,7 @@ import icu.telepathystudios.puretender.model.enums.Role;
 import icu.telepathystudios.puretender.model.enums.TenderStatus;
 import icu.telepathystudios.puretender.repo.AuthRepo;
 import icu.telepathystudios.puretender.repo.tender.TenderRepo;
+import icu.telepathystudios.puretender.service.blockchain.BlockchainRecordService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
@@ -34,6 +35,7 @@ public class TenderService {
 
     private final TenderRepo tenderRepo;
     private final AuthRepo authRepo;
+    private final BlockchainRecordService blockchainRecordService;
 
     // CREATE TENDER
     @Transactional
@@ -62,7 +64,9 @@ public class TenderService {
         tender.setAuthority(authority);
         tender.setStatus(TenderStatus.SUBMITTED);
 
-        return mapToResponse(tenderRepo.save(tender));
+        Tender savedTender = tenderRepo.save(tender);
+        blockchainRecordService.createTenderRecord(savedTender);
+        return mapToResponse(savedTender);
     }
 
     // UPDATE TENDER
@@ -100,7 +104,9 @@ public class TenderService {
         tender.setSubmissionDeadline(request.submissionDeadline());
         tender.setOpeningDate(request.openingDate());
 
-        return mapToResponse(tenderRepo.save(tender));
+        Tender savedTender = tenderRepo.save(tender);
+        blockchainRecordService.updateTenderRecord(savedTender);
+        return mapToResponse(savedTender);
     }
 
     // GET AUTHORITY'S TENDERS

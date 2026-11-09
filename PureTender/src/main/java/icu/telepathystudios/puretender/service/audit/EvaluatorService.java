@@ -16,6 +16,7 @@ import icu.telepathystudios.puretender.repo.bid.BidRepo;
 import icu.telepathystudios.puretender.repo.tender.TenderAwardRepo;
 import icu.telepathystudios.puretender.repo.tender.TenderRepo;
 import icu.telepathystudios.puretender.repo.admin.TenderEvaluatorRepo;
+import icu.telepathystudios.puretender.service.blockchain.DocumentHashService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -42,6 +43,7 @@ public class EvaluatorService {
     private final BidDocumentRepo bidDocumentRepo;
     private final BidEvaluationRepo bidEvaluationRepo;
     private final TenderAwardRepo tenderAwardRepo;
+    private final DocumentHashService documentHashService;
 
     // 1. Get all tenders assigned to the logged-in evaluator
     @Transactional(readOnly = true)
@@ -184,6 +186,14 @@ public class EvaluatorService {
                         HttpStatus.NOT_FOUND,
                         "No proposal PDF was uploaded for this bid."
                 ));
+
+        if (!documentHashService.matches(
+                document.getFileData(), document.getSha256Hash())) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Stored proposal PDF failed its integrity check."
+            );
+        }
 
         return new BidProposalDownload(
                 document.getFileData(),

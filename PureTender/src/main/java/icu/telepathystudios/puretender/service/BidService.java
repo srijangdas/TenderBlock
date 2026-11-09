@@ -17,6 +17,8 @@ import icu.telepathystudios.puretender.repo.AuthRepo;
 import icu.telepathystudios.puretender.repo.bid.BidDocumentRepo;
 import icu.telepathystudios.puretender.repo.bid.BidRepo;
 import icu.telepathystudios.puretender.repo.tender.TenderRepo;
+import icu.telepathystudios.puretender.service.blockchain.DocumentHashService;
+import icu.telepathystudios.puretender.service.blockchain.BlockchainRecordService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -29,10 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.HexFormat;
 import java.util.UUID;
 
 @Service
@@ -43,6 +42,8 @@ public class BidService {
     private final TenderRepo tenderRepo;
     private final AuthRepo authRepo;
     private final BidDocumentRepo bidDocumentRepo;
+    private final DocumentHashService documentHashService;
+    private final BlockchainRecordService blockchainRecordService;
 
     // CREATE DRAFT BID
     @Transactional
@@ -78,7 +79,7 @@ public class BidService {
         return mapToResponse(bidRepo.save(bid));
     }
 
-    // UPDATE DRAFT BID
+    // UPDATE DRAFT OR SUBMITTED BID
     @Transactional
     public BidResponse updateBid(
             UUID bidId,
@@ -90,10 +91,10 @@ public class BidService {
 
         Bid bid = getContractorBid(bidId, contractor.getId());
 
-        if (bid.getStatus() != BidStatus.DRAFT) {
+        if (!isEditableBid(bid)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Only draft bids can be updated"
+                    "Only draft or submitted bids can be updated"
             );
         }
 
@@ -101,7 +102,11 @@ public class BidService {
 
         bid.setQuotedAmount(request.quotedAmount());
 
-        return mapToResponse(bidRepo.save(bid));
+        Bid savedBid = bidRepo.save(bid);
+        if (savedBid.getStatus() == BidStatus.SUBMITTED) {
+            blockchainRecordService.updateBidRecord(savedBid, null);
+        }
+        return mapToResponse(savedBid);
     }
 
     // SUBMIT BID
@@ -134,7 +139,9 @@ public class BidService {
         bid.setStatus(BidStatus.SUBMITTED);
         bid.setSubmittedAt(Instant.now());
 
-        return mapToResponse(bidRepo.save(bid));
+        Bid submittedBid = bidRepo.save(bid);
+        blockchainRecordService.createBidRecord(submittedBid);
+        return mapToResponse(submittedBid);
     }
 
     // GET MY BIDS
@@ -245,6 +252,11 @@ public class BidService {
         }
     }
 
+    private boolean isEditableBid(Bid bid) {
+        return bid.getStatus() == BidStatus.DRAFT
+                || bid.getStatus() == BidStatus.SUBMITTED;
+    }
+
     @Transactional
     public void uploadProposal(
             UUID bidId,
@@ -256,10 +268,10 @@ public class BidService {
 
         Bid bid = getContractorBid(bidId, contractor.getId());
 
-        if (bid.getStatus() != BidStatus.DRAFT) {
+        if (!isEditableBid(bid)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Proposal can only be uploaded to a draft bid"
+                    "Proposal can only be uploaded to a draft or submitted bid"
             );
         }
 
@@ -278,7 +290,7 @@ public class BidService {
             );
         }
 
-        String hash = calculateSha256(fileData);
+        String hash = documentHashService.sha256(fileData);
 
         BidDocument document = bidDocumentRepo
                 .findByBid_Id(bidId)
@@ -290,7 +302,10 @@ public class BidService {
         document.setFileData(fileData);
         document.setSha256Hash(hash);
 
-        bidDocumentRepo.save(document);
+        BidDocument savedDocument = bidDocumentRepo.save(document);
+        if (bid.getStatus() == BidStatus.SUBMITTED) {
+            blockchainRecordService.updateBidRecord(bid, savedDocument);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -308,6 +323,8 @@ public class BidService {
                         HttpStatus.NOT_FOUND,
                         "Proposal PDF not found"
                 ));
+
+        verifyDocumentHash(document);
 
         return new BidProposalDownload(
                 document.getFileData(),
@@ -362,17 +379,12 @@ public class BidService {
             );
         }
     }
-    private String calculateSha256(byte[] data) {
-
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-
-            return HexFormat.of().formatHex(digest.digest(data));
-
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(
-                    "SHA-256 algorithm is unavailable",
-                    e
+    private void verifyDocumentHash(BidDocument document) {
+        if (!documentHashService.matches(
+                document.getFileData(), document.getSha256Hash())) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Stored proposal PDF failed its integrity check"
             );
         }
     }

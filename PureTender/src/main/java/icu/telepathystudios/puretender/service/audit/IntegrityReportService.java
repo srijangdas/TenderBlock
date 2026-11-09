@@ -3,7 +3,6 @@ package icu.telepathystudios.puretender.service.audit;
 import icu.telepathystudios.puretender.model.classes.Bid;
 import icu.telepathystudios.puretender.model.classes.IntegrityReport;
 import icu.telepathystudios.puretender.model.classes.Tender;
-import icu.telepathystudios.puretender.model.classes.TenderAward;
 import icu.telepathystudios.puretender.model.enums.*;
 import icu.telepathystudios.puretender.repo.*;
 
@@ -44,17 +43,11 @@ public class IntegrityReportService {
                         "Tender not found."
                 ));
 
-        TenderAward award = tenderAwardRepo.findByTender_Id(tenderId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "An integrity report can only be generated for an awarded tender."
-                ));
-
-        if (tender.getStatus() != TenderStatus.AWARDED &&
-                tender.getStatus() != TenderStatus.VOIDED) {
+        if (tender.getStatus() != TenderStatus.UNDER_EVALUATION
+                || tenderAwardRepo.existsByTender_Id(tenderId)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
-                    "The tender is not in an awarded state."
+                    "Integrity reports in this workflow require an unawarded tender under evaluation."
             );
         }
 
@@ -86,17 +79,8 @@ public class IntegrityReportService {
         report.setStatus(IntegrityReportStatus.OPEN);
 
         IntegrityReport savedReport = integrityReportRepo.save(report);
-
-        // Update the award's verification status.
-        if (award.getVerificationStatus() != VerificationStatus.FAILED &&
-                award.getVerificationStatus() != VerificationStatus.UNDER_AUDIT) {
-
-            award.setVerificationStatus(
-                    VerificationStatus.DISCREPANCY_FOUND
-            );
-
-            tenderAwardRepo.save(award);
-        }
+        tender.setStatus(TenderStatus.ON_HOLD);
+        tenderRepo.save(tender);
 
         return savedReport;
     }
