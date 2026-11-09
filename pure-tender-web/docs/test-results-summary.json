@@ -1,0 +1,254 @@
+{
+  "stats": {
+    "startTime": "2026-11-09T10:17:52.895Z",
+    "duration": 53597.76,
+    "expected": 22,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "name": "demo admin verification persists across role sessions",
+      "file": "demo.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 6827
+        }
+      ]
+    },
+    {
+      "name": "demo scoring persists after reload and all staff share one session",
+      "file": "demo.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 7979
+        }
+      ]
+    },
+    {
+      "name": "demo auditor claim and resolution persist and audit detail renders",
+      "file": "demo.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 5384
+        }
+      ]
+    },
+    {
+      "name": "shared login and reload for CONTRACTOR",
+      "file": "integration.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 6815
+        }
+      ]
+    },
+    {
+      "name": "shared login and reload for AUTHORITY",
+      "file": "integration.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 6336
+        }
+      ]
+    },
+    {
+      "name": "shared login and reload for ADMIN",
+      "file": "integration.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 7747
+        }
+      ]
+    },
+    {
+      "name": "shared login and reload for EVALUATOR",
+      "file": "integration.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 7558
+        }
+      ]
+    },
+    {
+      "name": "shared login and reload for AUDITOR",
+      "file": "integration.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 7325
+        }
+      ]
+    },
+    {
+      "name": "unauthenticated staff deep links and wrong-role access redirect",
+      "file": "integration.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 8163
+        }
+      ]
+    },
+    {
+      "name": "admin verifies applicants and approves with the evaluator ID",
+      "file": "integration.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 6309
+        }
+      ]
+    },
+    {
+      "name": "admin rejection failure stays visible in the action dialog",
+      "file": "integration.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 6412
+        }
+      ]
+    },
+    {
+      "name": "staff queues fetch subsequent Spring pages",
+      "file": "integration.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 3609
+        }
+      ]
+    },
+    {
+      "name": "evaluator saves scores, prevents unsaved finalization, and downloads proposals",
+      "file": "integration.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 6790
+        }
+      ]
+    },
+    {
+      "name": "auditor reports work when optional endpoints are missing",
+      "file": "integration.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 6603
+        }
+      ]
+    },
+    {
+      "name": "401 clears the common session and returns staff to login",
+      "file": "integration.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 4477
+        }
+      ]
+    },
+    {
+      "name": "mobile workspace and shared theme",
+      "file": "integration.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 5091
+        }
+      ]
+    },
+    {
+      "name": "public registration sends only supported account and company fields",
+      "file": "public-workflows.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 7083
+        }
+      ]
+    },
+    {
+      "name": "lister creates a SUBMITTED tender using the Java DTO and IST dates",
+      "file": "public-workflows.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 6284
+        }
+      ]
+    },
+    {
+      "name": "bidder draft, proposal upload, and submission use the backend sequence",
+      "file": "public-workflows.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 7263
+        }
+      ]
+    },
+    {
+      "name": "failed upload preserves the draft reference for a retry",
+      "file": "public-workflows.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 6775
+        }
+      ]
+    },
+    {
+      "name": "evaluator registration keeps staff role selection fixed and returns to staff login",
+      "file": "public-workflows.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 4660
+        }
+      ]
+    },
+    {
+      "name": "pending evaluator sees verification status before protected API calls",
+      "file": "public-workflows.spec.mjs",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "durationMs": 3020
+        }
+      ]
+    }
+  ]
+}

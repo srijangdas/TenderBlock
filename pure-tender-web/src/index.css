@@ -1,111 +1,56 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+@theme {
+  --color-ink: #243947;
+  --color-brand: #285970;
+  --color-brand-dark: #1d455c;
+  --color-cloud: #f4f5f2;
+  --font-sans: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
+:root { font-family: var(--font-sans); color: #243947; background: #f4f5f2; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; min-width: 320px; }
+html.dark { background: #0b1220; color: #e2e8f0; }
+html.dark body { background: #0b1220; }
+html.dark .tb-card { background: #162237; border-color: #334155; }
+html.dark .tb-input { background: #101b2e; border-color: #475569; color: #e2e8f0; }
+html.dark .tb-label { color: #cbd5e1; }
+html.dark .tb-btn-outline { background: #19283e; border-color: #475569; color: #e2e8f0; }
+html.dark .tb-btn-outline:hover { background: #26364f; }
+html.dark .tb-link { color: #93c5fd; }
+html.dark .tb-error { color: #fca5a5; }
+html.dark .tb-section-title { color: #f1f5f9; }
+html.dark .tb-muted { color: #cbd5e1; }
+html.dark .tb-table th { background: #1e293b; color: #cbd5e1; }
+html.dark .tb-table td { border-color: #334155; color: #e2e8f0; }
+html.dark .tb-table tbody tr:hover { background: #1e293b; }
+button, input, select, textarea { font: inherit; }
+button:not(:disabled) { cursor: pointer; }
+a { text-decoration: none; }
+:focus-visible { outline: 3px solid #8bbcff; outline-offset: 2px; }
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
+/* A few shared classes keep page JSX readable while Tailwind handles layout. */
+.tb-container { @apply mx-auto w-full max-w-[1180px] px-5 sm:px-8; }
+.tb-card { @apply rounded-lg border border-slate-200 bg-white shadow-[0_2px_12px_rgba(22,43,52,0.035)]; }
+.tb-input { @apply mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100; }
+.tb-label { @apply block text-sm font-semibold text-slate-700; }
+.tb-btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-md bg-[#285970] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1d455c] disabled:cursor-not-allowed disabled:opacity-50; }
+.tb-btn-outline { @apply inline-flex items-center justify-center gap-2 rounded-md border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 disabled:opacity-50; }
+.tb-link { @apply font-medium text-blue-700 hover:text-blue-900 hover:underline; }
+.tb-error { @apply mt-1 text-xs font-medium text-red-700; }
+.tb-section-title { @apply text-2xl font-semibold tracking-tight text-[#243947] sm:text-[30px]; }
+.tb-muted { @apply text-sm leading-relaxed text-slate-600; }
+.tb-table { @apply w-full border-collapse text-left text-sm; }
+.tb-table th { @apply bg-slate-50 px-4 py-3 text-xs font-bold uppercase tracking-wider text-slate-500; }
+.tb-table td { @apply border-t border-slate-100 px-4 py-3.5 align-middle text-slate-700; }
+.tb-table tbody tr { @apply hover:bg-slate-50/70; }
+@media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
 
-body {
-  margin: 0;
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
+/* Landing page: warm neutral backdrop, restrained accents, and readable editorial typography. */
+.tb-landing-hero { background: #f5f5ef; }
+html.dark .tb-landing-hero { background: #111e29; }
+.tb-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: #54717a; }
+html.dark .tb-eyebrow { color: #adc0c8; }
