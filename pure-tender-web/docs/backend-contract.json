@@ -1,0 +1,391 @@
+{
+  "repository": "https://github.com/srijangdas/TenderBlock",
+  "ref": "main",
+  "commit": "f2e498e49cc766ec3536ae039f00358b9c3d4a62",
+  "inspectedAt": "2026-11-09",
+  "apiPrefix": "/api/v1",
+  "backendRoutes": [
+    {
+      "method": "GET",
+      "path": "/api/v1/auditor/reports",
+      "controller": "AuditorController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auditor/reports/{reportId}",
+      "controller": "AuditorController.java"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auditor/reports/{reportId}/claim",
+      "controller": "AuditorController.java"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auditor/reports/{reportId}/resolve",
+      "controller": "AuditorController.java"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auditor/tenders/{tenderId}/award",
+      "controller": "AuditorController.java"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/bids/tender/{tenderId}",
+      "controller": "BidController.java"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/bids/{bidId}",
+      "controller": "BidController.java"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/bids/{bidId}/submit",
+      "controller": "BidController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/bids/my",
+      "controller": "BidController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/bids/{bidId}",
+      "controller": "BidController.java"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/bids/{bidId}/proposal",
+      "controller": "BidController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/bids/{bidId}/proposal",
+      "controller": "BidController.java"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/register/{role}",
+      "controller": "AuthController.java"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "controller": "AuthController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evaluator/tenders/my",
+      "controller": "EvaluatorController.java"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/evaluator/tenders/{tenderId}/open-bids",
+      "controller": "EvaluatorController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evaluator/tenders/{tenderId}/bids",
+      "controller": "EvaluatorController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evaluator/bids/{bidId}/proposal",
+      "controller": "EvaluatorController.java"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/evaluator/bids/{bidId}/evaluation",
+      "controller": "EvaluatorController.java"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/evaluator/bids/{bidId}/evaluation/finalize",
+      "controller": "EvaluatorController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evaluator/bids/{bidId}/evaluation",
+      "controller": "EvaluatorController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/evaluator/tenders/{tenderId}/award",
+      "controller": "EvaluatorController.java"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/tenders",
+      "controller": "TenderController.java"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/tenders/{tenderId}",
+      "controller": "TenderController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/tenders/my",
+      "controller": "TenderController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/tenders/published",
+      "controller": "TenderController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/tenders/{tenderId}",
+      "controller": "TenderController.java"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/tenders/{tenderId}/cancel",
+      "controller": "TenderController.java"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/company/profile",
+      "controller": "CompanyProfileController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/company/profile/me",
+      "controller": "CompanyProfileController.java"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/company/profile/me",
+      "controller": "CompanyProfileController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users/pending",
+      "controller": "AdminController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "controller": "AdminController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users/{userId}",
+      "controller": "AdminController.java"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/users/{userId}/verify",
+      "controller": "AdminController.java"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/users/{userId}/reject",
+      "controller": "AdminController.java"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/users/{userId}/disable",
+      "controller": "AdminController.java"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/users/{userId}/enable",
+      "controller": "AdminController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users/{userId}/details",
+      "controller": "AdminController.java"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/tenders/pending",
+      "controller": "AdminController.java"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/tenders/{tenderId}/approve",
+      "controller": "AdminController.java"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/tenders/{tenderId}/reject",
+      "controller": "AdminController.java"
+    }
+  ],
+  "frontendImplementedCalls": [
+    {
+      "method": "POST",
+      "path": "/auth/login"
+    },
+    {
+      "method": "POST",
+      "path": "/auth/register/{role}"
+    },
+    {
+      "method": "POST",
+      "path": "/company/profile"
+    },
+    {
+      "method": "GET",
+      "path": "/company/profile/me"
+    },
+    {
+      "method": "PUT",
+      "path": "/company/profile/me"
+    },
+    {
+      "method": "POST",
+      "path": "/tenders"
+    },
+    {
+      "method": "PUT",
+      "path": "/tenders/{id}"
+    },
+    {
+      "method": "GET",
+      "path": "/tenders/my"
+    },
+    {
+      "method": "GET",
+      "path": "/tenders/published"
+    },
+    {
+      "method": "GET",
+      "path": "/tenders/{id}"
+    },
+    {
+      "method": "PATCH",
+      "path": "/tenders/{id}/cancel"
+    },
+    {
+      "method": "POST",
+      "path": "/bids/tender/{id}"
+    },
+    {
+      "method": "PUT",
+      "path": "/bids/{id}"
+    },
+    {
+      "method": "POST",
+      "path": "/bids/{id}/submit"
+    },
+    {
+      "method": "GET",
+      "path": "/bids/my"
+    },
+    {
+      "method": "GET",
+      "path": "/bids/{id}"
+    },
+    {
+      "method": "PUT",
+      "path": "/bids/{id}/proposal"
+    },
+    {
+      "method": "GET",
+      "path": "/bids/{id}/proposal"
+    },
+    {
+      "method": "GET",
+      "path": "/admin/users/pending"
+    },
+    {
+      "method": "GET",
+      "path": "/admin/users"
+    },
+    {
+      "method": "GET",
+      "path": "/admin/tenders/pending"
+    },
+    {
+      "method": "PATCH",
+      "path": "/admin/users/{id}/verify"
+    },
+    {
+      "method": "PATCH",
+      "path": "/admin/users/{id}/reject"
+    },
+    {
+      "method": "PATCH",
+      "path": "/admin/tenders/{id}/approve"
+    },
+    {
+      "method": "PATCH",
+      "path": "/admin/tenders/{id}/reject"
+    },
+    {
+      "method": "GET",
+      "path": "/evaluator/tenders/my"
+    },
+    {
+      "method": "POST",
+      "path": "/evaluator/tenders/{id}/open-bids"
+    },
+    {
+      "method": "GET",
+      "path": "/evaluator/tenders/{id}/bids"
+    },
+    {
+      "method": "GET",
+      "path": "/evaluator/bids/{id}/proposal"
+    },
+    {
+      "method": "PUT",
+      "path": "/evaluator/bids/{id}/evaluation"
+    },
+    {
+      "method": "POST",
+      "path": "/evaluator/bids/{id}/evaluation/finalize"
+    },
+    {
+      "method": "GET",
+      "path": "/evaluator/bids/{id}/evaluation"
+    },
+    {
+      "method": "GET",
+      "path": "/evaluator/tenders/{id}/award"
+    },
+    {
+      "method": "GET",
+      "path": "/auditor/reports"
+    },
+    {
+      "method": "POST",
+      "path": "/auditor/reports/{id}/claim"
+    },
+    {
+      "method": "POST",
+      "path": "/auditor/reports/{id}/resolve"
+    },
+    {
+      "method": "POST",
+      "path": "/auditor/tenders/{id}/award"
+    }
+  ],
+  "pendingEndpoints": [
+    {
+      "method": "GET",
+      "path": "/admin/tenders/{id}/document"
+    },
+    {
+      "method": "GET",
+      "path": "/auditor/tenders/flagged"
+    },
+    {
+      "method": "GET",
+      "path": "/auditor/tenders/completed"
+    },
+    {
+      "method": "GET",
+      "path": "/auditor/tenders/{id}/audit"
+    },
+    {
+      "method": "GET",
+      "path": "/auditor/bids/{id}/proposal"
+    }
+  ]
+}

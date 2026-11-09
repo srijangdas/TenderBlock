@@ -1,122 +1,72 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { Navigate, Route, Routes } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+import AccessPage from './pages/AccessPage';
+import RegisterPage from './pages/RegisterPage';
+import LoginPage from './pages/LoginPage';
+import EvaluatorRegisterPage from './pages/EvaluatorRegisterPage';
+import StaffLoginPage from './pages/StaffLoginPage';
+import StaffWorkspacePage from './pages/StaffWorkspacePage';
+import ListerPage, { MyTendersPage } from './pages/ListerPage';
+import CreateTenderPage from './pages/CreateTenderPage';
+import BidderPage, { MyBidsPage } from './pages/BidderPage';
+import BidderDashboardPage from './pages/BidderDashboardPage';
+import ProfilePage from './pages/ProfilePage';
+import EditBidPage from './pages/EditBidPage';
+import EditTenderPage from './pages/EditTenderPage';
+import NotFoundPage from './pages/NotFoundPage';
+import WorkspaceLayout from './components/WorkspaceLayout';
+import RequireRole from './components/RequireRole';
+import { useAuth } from './context/AuthContext';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+function PublicLandingEntry() {
+  const { user } = useAuth();
+  if (['ADMIN', 'EVALUATOR', 'AUDITOR'].includes(user?.role)) {
+    return <Navigate to="/staff/workspace" replace />;
+  }
+  if (user?.role === 'BIDDER') return <Navigate to="/bidder" replace />;
+  if (user?.role === 'LISTER') return <Navigate to="/lister" replace />;
+  return <LandingPage />;
 }
 
-export default App
+function RootRedirect() {
+  const { user } = useAuth();
+  return <Navigate to={!user ? '/' : user.role === 'LISTER' ? '/lister' : user.role === 'BIDDER' ? '/bidder' : '/staff/workspace'} replace />;
+}
+
+export default function App() {
+  return <Routes>
+    <Route path="/" element={<PublicLandingEntry/>}/>
+    <Route path="/access" element={<AccessPage/>}/>
+    <Route path="/register" element={<RegisterPage/>}/>
+    <Route path="/login" element={<LoginPage/>}/>
+    {['admin','evaluator','auditor'].map(role => <Route key={role} path={`/${role}/*`} element={<Navigate to="/staff/workspace" replace />} />)}
+    <Route path="/staff" element={<Navigate to="/staff/login" replace />} />
+    <Route path="/staff/register/evaluator" element={<EvaluatorRegisterPage/>}/>
+    <Route path="/staff/login" element={<StaffLoginPage/>}/>
+    <Route element={<RequireRole roles={['ADMIN', 'EVALUATOR', 'AUDITOR']} />}>
+      <Route path="/staff/workspace" element={<StaffWorkspacePage/>}/>
+    </Route>
+    <Route element={<RequireRole role="LISTER"/>}>
+      <Route element={<WorkspaceLayout/>}>
+        <Route path="/lister" element={<ListerPage/>}/>
+        <Route path="/lister/create" element={<CreateTenderPage/>}/>
+        <Route path="/lister/my-tenders" element={<MyTendersPage/>}/>
+        <Route path="/lister/tenders/:tenderId/edit" element={<EditTenderPage/>}/>
+      </Route>
+    </Route>
+    <Route element={<RequireRole role="BIDDER"/>}>
+      <Route element={<WorkspaceLayout/>}>
+        <Route path="/bidder" element={<BidderDashboardPage/>}/>
+        <Route path="/bidder/tenders" element={<BidderPage title="Browse Tenders" showAllInitially/>}/>
+        <Route path="/bidder/tenders/:tenderId" element={<BidderPage title="Tender Details"/>}/>
+        <Route path="/bidder/my-bids" element={<MyBidsPage/>}/>
+        <Route path="/bidder/bids/:bidId/edit" element={<EditBidPage/>}/>
+      </Route>
+    </Route>
+    <Route element={<RequireRole roles={['BIDDER', 'LISTER']}/> }>
+      <Route element={<WorkspaceLayout/>}><Route path="/profile" element={<ProfilePage/>}/></Route>
+    </Route>
+    <Route path="/workspace" element={<RootRedirect/>}/>
+    <Route path="*" element={<NotFoundPage/>}/>
+  </Routes>;
+}
