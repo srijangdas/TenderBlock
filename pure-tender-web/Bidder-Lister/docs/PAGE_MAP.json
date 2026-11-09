@@ -1,0 +1,32 @@
+{
+  "Landing page": [
+    "src/pages/LandingPage.jsx",
+    "src/components/PublicHeader.jsx",
+    "src/components/TeamFooter.jsx",
+    "src/components/ThemeToggle.jsx"
+  ],
+  "Login + registration": [
+    "src/pages/LoginPage.jsx",
+    "src/pages/RegisterPage.jsx",
+    "src/context/AuthContext.jsx",
+    "src/api/dtos.js"
+  ],
+  "Bidder": [
+    "src/pages/BidderPage.jsx",
+    "src/components/TenderDetailsPanel.jsx",
+    "src/components/BidForm.jsx",
+    "src/pages/EditBidPage.jsx"
+  ],
+  "Lister": [
+    "src/pages/ListerPage.jsx",
+    "src/components/TenderForm.jsx",
+    "src/pages/EditTenderPage.jsx"
+  ],
+  "Shared": [
+    "src/App.jsx",
+    "src/main.jsx",
+    "src/index.css",
+    "src/api/services.js",
+    "src/api/http.js"
+  ]
+}

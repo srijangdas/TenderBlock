@@ -1,0 +1,9 @@
+{
+  "repository": "srijangdas/TenderBlock",
+  "backendBranch": "backend",
+  "commit": "b6f73c88a484469473581f6032591fbb0df12a24",
+  "checkedOn": "2026-11-08",
+  "scope": "Current backend static review plus shipped frontend HTTP adapters against real Spring Boot/PostgreSQL 17.11. Fabric success/unavailability are explicit boundary test doubles; no real ledger validated.",
+  "backendModified": false,
+  "historicalH2Commit": "8b7b5b7e3682ee3f16c60c7bafe87ceca984f092"
+}

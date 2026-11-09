@@ -1,0 +1,7 @@
+--- a/PureTender/src/main/java/icu/telepathystudios/puretender/service/auth/AuthService.java
++++ b/PureTender/src/main/java/icu/telepathystudios/puretender/service/auth/AuthService.java
+@@ -1,3 +1,3 @@
+-        String token = jwtUtil.generateToken(user.getEmail(),  Role.CONTRACTOR.toString());
++        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+ 
+         return toAuthResponse(user, token);

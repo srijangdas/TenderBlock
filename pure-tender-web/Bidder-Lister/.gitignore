@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+.DS_Store
+.vscode/
+
+test-results/
+playwright-report/
+tests/integration/harness/pom.xml
+tests/integration/harness/target/

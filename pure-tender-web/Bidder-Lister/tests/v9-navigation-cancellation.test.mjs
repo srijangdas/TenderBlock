@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { canCancelTenderBeforeDeadline } from '../src/utils/tenderPermissions.js';
+
+function source(name) { return readFileSync(new URL(`../src/${name}`, import.meta.url), 'utf8'); }
+const app = source('App.jsx');
+const landing = source('pages/LandingPage.jsx');
+const dashboard = source('pages/BidderDashboardPage.jsx');
+const browse = source('pages/BidderPage.jsx');
+const lister = source('pages/ListerPage.jsx');
+const login = source('components/PublicLoginForm.jsx');
+const teamBid = source('components/TeamBidForm.jsx');
+assert.match(app, /path="\/bidder" element=\{<BidderDashboardPage\/>\}/);
+assert.match(app, /path="\/bidder\/tenders" element=\{<BidderPage/);
+assert.doesNotMatch(dashboard, /<TenderTable/);
+assert.match(browse, /<TenderTable/);
+assert.match(landing, /<HeroIllustration/);
+assert.doesNotMatch(landing, /<PublicLoginForm/);
+assert.match(login, /async function handleLogin/);
+assert.doesNotMatch(lister, /<TenderForm/);
+assert.match(source('pages/CreateTenderPage.jsx'), /<TenderForm/);
+assert.match(lister, /canCancelTenderBeforeDeadline/);
+assert.match(lister, /tenderApi\.cancel/);
+assert.match(teamBid, /submittedEdit/);
+assert.match(teamBid, /!submittedEdit && <button/);
+const tender = {status:'PUBLISHED',submissionDeadline:'2030-01-10T12:00:00Z'};
+assert.equal(canCancelTenderBeforeDeadline(tender,{verified:true, now:Date.parse('2030-01-10T11:59:59Z')}),true);
+assert.equal(canCancelTenderBeforeDeadline(tender,{verified:true, now:Date.parse('2030-01-10T12:00:00Z')}),false);
+assert.equal(canCancelTenderBeforeDeadline(tender,{verified:false, now:Date.parse('2030-01-10T11:00:00Z')}),false);
+assert.equal(canCancelTenderBeforeDeadline({...tender,status:'ON_HOLD'},{verified:true,now:0}),false);
+assert.equal(canCancelTenderBeforeDeadline({...tender,status:'SUBMITTED'},{verified:true,now:0}),false);
+assert.equal(canCancelTenderBeforeDeadline({...tender,submissionDeadline:'invalid'},{verified:true,now:0}),false);
+console.log('PASS: distinct dashboard/browse routes, dedicated login, cancellation eligibility, and submitted-bid editing');
