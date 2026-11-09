@@ -19,6 +19,7 @@ public record TenderResponse(
         TenderStatus status,
         UUID authorityId,
         String authorityName,
-        Instant createdAt
+        Instant createdAt,
+        String rejectionReason
 
 ) {}

@@ -4,6 +4,7 @@ import icu.telepathystudios.puretender.dto.audit.CancelTenderRequest;
 import icu.telepathystudios.puretender.dto.audit.TenderCancellationResponse;
 import icu.telepathystudios.puretender.dto.tender.CreateTenderRequest;
 import icu.telepathystudios.puretender.dto.tender.TenderResponse;
+import icu.telepathystudios.puretender.dto.tender.TenderAwardSummaryResponse;
 import icu.telepathystudios.puretender.dto.tender.UpdateTenderRequest;
 import icu.telepathystudios.puretender.service.TenderService;
 import jakarta.validation.Valid;
@@ -67,6 +68,17 @@ public class TenderController {
     ) {
 
         return tenderService.getMyTenders(authentication, pageable);
+    }
+
+    @GetMapping("/{tenderId}/award")
+    @PreAuthorize("hasRole('AUTHORITY')")
+    public ResponseEntity<TenderAwardSummaryResponse> getTenderAwardForAuthority(
+            @PathVariable UUID tenderId,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(
+                tenderService.getTenderAwardForAuthority(tenderId, authentication)
+        );
     }
 
     // GET ALL PUBLISHED TENDERS

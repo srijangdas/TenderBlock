@@ -310,7 +310,8 @@ public class AdminService {
                 tender.getStatus(),
                 tender.getAuthority().getId(),
                 tender.getAuthority().getFullName(),
-                tender.getCreatedAt()
+                tender.getCreatedAt(),
+                tender.getRejectionReason()
         );
     }
 

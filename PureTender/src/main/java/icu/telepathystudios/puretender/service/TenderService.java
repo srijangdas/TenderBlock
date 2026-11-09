@@ -5,14 +5,17 @@ import icu.telepathystudios.puretender.dto.audit.CancelTenderRequest;
 import icu.telepathystudios.puretender.dto.audit.TenderCancellationResponse;
 import icu.telepathystudios.puretender.dto.tender.CreateTenderRequest;
 import icu.telepathystudios.puretender.dto.tender.TenderResponse;
+import icu.telepathystudios.puretender.dto.tender.TenderAwardSummaryResponse;
 import icu.telepathystudios.puretender.dto.tender.UpdateTenderRequest;
 import icu.telepathystudios.puretender.model.classes.Tender;
+import icu.telepathystudios.puretender.model.classes.TenderAward;
 import icu.telepathystudios.puretender.model.classes.User;
 import icu.telepathystudios.puretender.model.enums.AccountStatus;
 import icu.telepathystudios.puretender.model.enums.Role;
 import icu.telepathystudios.puretender.model.enums.TenderStatus;
 import icu.telepathystudios.puretender.repo.AuthRepo;
 import icu.telepathystudios.puretender.repo.tender.TenderRepo;
+import icu.telepathystudios.puretender.repo.tender.TenderAwardRepo;
 import icu.telepathystudios.puretender.service.blockchain.BlockchainRecordService;
 
 import lombok.RequiredArgsConstructor;
@@ -36,6 +39,7 @@ import java.util.UUID;
 public class TenderService {
 
     private final TenderRepo tenderRepo;
+    private final TenderAwardRepo tenderAwardRepo;
     private final AuthRepo authRepo;
     private final BlockchainRecordService blockchainRecordService;
 
@@ -121,6 +125,33 @@ public class TenderService {
         return tenderRepo
                 .findAllByAuthority_Id(authorityId, pageable)
                 .map(this::mapToResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public TenderAwardSummaryResponse getTenderAwardForAuthority(
+            UUID tenderId,
+            Authentication authentication
+    ) {
+        UUID authorityId = getUserIdFromAuthentication(authentication);
+        Tender tender = tenderRepo.findByIdAndAuthority_Id(tenderId, authorityId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Tender not found"
+                ));
+        if (tender.getStatus() != TenderStatus.AWARDED) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "No award has been recorded for this tender."
+            );
+        }
+        TenderAward award = tenderAwardRepo.findByTender_Id(tenderId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "No award has been recorded for this tender."
+                ));
+        var winningBid = award.getWinningBid();
+        return new TenderAwardSummaryResponse(
+                tender.getId(), tender.getTitle(), winningBid.getId(),
+                winningBid.getContractor().getFullName(), winningBid.getQuotedAmount(),
+                award.getAwardedAt()
+        );
     }
 
     // GET PUBLISHED TENDERS
@@ -312,7 +343,8 @@ public class TenderService {
                 tender.getStatus(),
                 tender.getAuthority().getId(),
                 tender.getAuthority().getFullName(),
-                tender.getCreatedAt()
+                tender.getCreatedAt(),
+                tender.getRejectionReason()
         );
     }
 }
