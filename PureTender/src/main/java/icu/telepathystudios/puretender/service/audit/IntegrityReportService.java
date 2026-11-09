@@ -28,6 +28,7 @@ public class IntegrityReportService {
     private final TenderAwardRepo tenderAwardRepo;
     private final IntegrityReportRepo integrityReportRepo;
 
+    //region System integrity report creation
     // Called internally when system/blockchain verification finds a discrepancy.
     @Transactional
     public IntegrityReport createSystemReport(
@@ -100,4 +101,5 @@ public class IntegrityReportService {
 
         return savedReport;
     }
+    //endregion
 }

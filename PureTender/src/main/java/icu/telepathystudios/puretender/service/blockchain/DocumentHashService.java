@@ -10,6 +10,7 @@ import java.util.HexFormat;
 @Service
 public class DocumentHashService {
 
+    //region SHA-256 generation and verification
     public String sha256(byte[] content) {
         try {
             return HexFormat.of().formatHex(
@@ -30,4 +31,5 @@ public class DocumentHashService {
         byte[] actual = sha256(content).getBytes(java.nio.charset.StandardCharsets.US_ASCII);
         return MessageDigest.isEqual(expected, actual);
     }
+    //endregion
 }

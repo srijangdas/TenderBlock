@@ -44,6 +44,7 @@ public class FabricService {
     private Gateway gateway;
     private Contract contract;
 
+    //region Fabric gateway lifecycle and identity loading
     @PostConstruct
     public void init() throws Exception {
         Path orgPath = Paths.get(cryptoPath)
@@ -119,6 +120,9 @@ public class FabricService {
         }
     }
 
+    //endregion
+
+    //region Fabric query operations
     public String getAllAssets() throws Exception {
         byte[] result = contract.evaluateTransaction("GetAllAssets");
         return new String(result, StandardCharsets.UTF_8);
@@ -135,6 +139,9 @@ public class FabricService {
         return new String(result, StandardCharsets.UTF_8);
     }
 
+    //endregion
+
+    //region Fabric transaction operations
     public String createAsset(
             String assetId,
             String color,
@@ -170,6 +177,9 @@ public class FabricService {
         contract.submitTransaction("UpdateRecord", recordId, payloadHash);
     }
 
+    //endregion
+
+    //region Gateway shutdown
     @PreDestroy
     public void shutdown() {
         if (gateway != null) {
@@ -180,4 +190,5 @@ public class FabricService {
             channel.shutdownNow();
         }
     }
+    //endregion
 }

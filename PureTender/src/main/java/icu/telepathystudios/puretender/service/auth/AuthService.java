@@ -28,6 +28,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
+    //region Registration, login, and account status
     @Transactional
     public AuthResponse register(RegisterRequest request, Role role) {
 
@@ -111,7 +112,9 @@ public class AuthService {
 
         return new AccountStatusResponse(user.getStatus());
     }
+    //endregion
 
+    //region Response mapping and input normalization
     private AuthResponse toAuthResponse(
             User user,
             String token) {
@@ -130,4 +133,5 @@ public class AuthService {
     private String normalizeEmail(String email) {
         return email.trim().toLowerCase(Locale.ROOT);
     }
+    //endregion
 }

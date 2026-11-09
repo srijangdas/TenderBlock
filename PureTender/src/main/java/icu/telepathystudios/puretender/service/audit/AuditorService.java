@@ -63,6 +63,7 @@ public class AuditorService {
     private final BlockchainRecordService blockchainRecordService;
     private final IntegrityReportService integrityReportService;
 
+    //region Auditor tender queues and integrity audits
     @Transactional(readOnly = true)
     public Page<AuditorTenderSummaryResponse> getReviewQueue(
             Authentication authentication,
@@ -245,6 +246,9 @@ public class AuditorService {
         );
     }
 
+    //endregion
+
+    //region Integrity report lifecycle and tender awards
     // 1. List all integrity reports
     @Transactional(readOnly = true)
     public Page<IntegrityReportResponse> getReports(
@@ -459,7 +463,9 @@ public class AuditorService {
     }
 
 
-    // ---------------- PRIVATE HELPERS ----------------
+    //endregion
+
+    //region Auditor authorization, ledger checks, and response mapping
 
     private User getVerifiedAuditor(Authentication authentication) {
 
@@ -569,4 +575,5 @@ public class AuditorService {
                 report.getResolvedAt()
         );
     }
+    //endregion
 }

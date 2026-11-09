@@ -23,6 +23,7 @@ public class CompanyProfileService {
     private final CompanyProfileRepo companyProfileRepo;
     private final AuthRepo authRepo;
 
+    //region Company profile operations
     @Transactional
     public CompanyProfileResponse createProfile(
             Authentication authentication,
@@ -94,7 +95,9 @@ public class CompanyProfileService {
 
         return mapToResponse(companyProfileRepo.save(profile));
     }
+    //endregion
 
+    //region Authentication and validation helpers
     private UUID getUserIdFromAuthentication(
             Authentication authentication
     ) {
@@ -116,7 +119,9 @@ public class CompanyProfileService {
             );
         }
     }
+    //endregion
 
+    //region Profile field updates and response mapping
     private void updateFields(
             CompanyProfile profile,
             CompanyProfileRequest request
@@ -148,4 +153,5 @@ public class CompanyProfileService {
                 profile.getSubmittedAt()
         );
     }
+    //endregion
 }

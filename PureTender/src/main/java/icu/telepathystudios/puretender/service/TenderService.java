@@ -48,6 +48,7 @@ public class TenderService {
     private final AuthRepo authRepo;
     private final BlockchainRecordService blockchainRecordService;
 
+    //region Tender creation, editing, and read operations
     // CREATE TENDER
     @Transactional
     public TenderResponse createTender(
@@ -230,6 +231,9 @@ public class TenderService {
         return mapToResponse(tender);
     }
 
+    //endregion
+
+    //region Tender cancellation
     @Transactional
     public TenderCancellationResponse cancelTender(
             UUID tenderId,
@@ -284,6 +288,9 @@ public class TenderService {
         );
     }
 
+    //endregion
+
+    //region Authorization, validation, and response mapping
     // VALIDATE AUTHORITY
     private User getAuthority(UUID authorityId) {
 
@@ -365,4 +372,5 @@ public class TenderService {
                 tender.getRejectionReason()
         );
     }
+    //endregion
 }

@@ -47,6 +47,7 @@ public class BidService {
     private final DocumentHashService documentHashService;
     private final BlockchainRecordService blockchainRecordService;
 
+    //region Bid creation, editing, and submission
     // CREATE DRAFT BID
     @Transactional
     public BidResponse createBid(
@@ -146,6 +147,9 @@ public class BidService {
         return mapToResponse(submittedBid);
     }
 
+    //endregion
+
+    //region Bidder bid queries
     // GET MY BIDS
     @Transactional(readOnly = true)
     public Page<BidResponse> getMyBids(
@@ -175,6 +179,9 @@ public class BidService {
         return mapToResponse(bid);
     }
 
+    //endregion
+
+    //region Bidder authorization and tender validation
     // VALIDATE CONTRACTOR
     private User getVerifiedContractor(
             org.springframework.security.core.Authentication authentication
@@ -259,6 +266,9 @@ public class BidService {
                 || bid.getStatus() == BidStatus.SUBMITTED;
     }
 
+    //endregion
+
+    //region Proposal upload and download
     @Transactional
     public void uploadProposal(
             UUID bidId,
@@ -335,6 +345,9 @@ public class BidService {
         );
     }
 
+    //endregion
+
+    //region Proposal validation and response mapping
     private void validatePdf(MultipartFile file) {
 
         if (file == null || file.isEmpty()) {
@@ -409,4 +422,5 @@ public class BidService {
                 bidDocumentRepo.existsByBid_Id(bid.getId())
         );
     }
+    //endregion
 }

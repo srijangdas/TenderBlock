@@ -37,6 +37,7 @@ public class AdminService {
     private final TenderRepo tenderRepo;
     private final AuthRepo authRepo;
 
+    //region Review queues and account lookup
     // View all pending registrations
     @Transactional(readOnly = true)
     public Page<AdminUserResponse> getPendingUsers(Pageable pageable) {
@@ -74,6 +75,9 @@ public class AdminService {
         return toResponse(user);
     }
 
+    //endregion
+
+    //region Account status actions
     // Approve registration
     @Transactional
     public AdminActionResponse verifyUser(UUID userId) {
@@ -184,6 +188,9 @@ public class AdminService {
         );
     }
 
+    //endregion
+
+    //region Tender approval, assignment, and rejection
     // APPROVE TENDER AND ASSIGN EVALUATOR
     @Transactional
     public TenderResponse approveTender(
@@ -295,7 +302,9 @@ public class AdminService {
         return mapTenderToResponse(tender);
     }
 
+    //endregion
 
+    //region Tender and account response mapping
     // MAP TENDER ENTITY TO RESPONSE DTO
     private TenderResponse mapTenderToResponse(Tender tender) {
 
@@ -372,4 +381,5 @@ public class AdminService {
                 user.getCreatedAt()
         );
     }
+    //endregion
 }

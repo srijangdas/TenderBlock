@@ -24,6 +24,7 @@ public class BlockchainRecordService {
     private final DocumentHashService documentHashService;
     private final BidDocumentRepo bidDocumentRepo;
 
+    //region Tender integrity records
     public void createTenderRecord(Tender tender) {
         submit(true, tenderLedgerId(tender), "TENDER", "", hashTender(tender));
     }
@@ -49,6 +50,9 @@ public class BlockchainRecordService {
         return hash(payLoadExtract(tender));
     }
 
+    //endregion
+
+    //region Ledger reads and bid integrity records
     public boolean integrityRecordExists(String recordId) throws Exception {
         return fabricService.integrityRecordExists(recordId);
     }
@@ -98,6 +102,9 @@ public class BlockchainRecordService {
         return hash(payload);
     }
 
+    //endregion
+
+    //region Ledger identifiers, payload hashing, and submission
     private String tenderLedgerId(Tender tender) {
         return "TENDER:" + tender.getId();
     }
@@ -135,4 +142,5 @@ public class BlockchainRecordService {
             );
         }
     }
+    //endregion
 }

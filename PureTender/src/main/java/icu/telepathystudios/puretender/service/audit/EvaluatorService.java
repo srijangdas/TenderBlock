@@ -45,6 +45,7 @@ public class EvaluatorService {
     private final TenderAwardRepo tenderAwardRepo;
     private final DocumentHashService documentHashService;
 
+    //region Assigned tenders, bid access, and authorization helpers
     // 1. Get all tenders assigned to the logged-in evaluator
     @Transactional(readOnly = true)
     public Page<AssignedTenderResponse> getMyAssignedTenders(
@@ -286,6 +287,9 @@ public class EvaluatorService {
         );
     }
 
+    //endregion
+
+    //region Bid evaluation workflow
     // 5. Save or update an evaluation draft
     @Transactional
     public BidEvaluationResponse saveBidEvaluation(
@@ -439,6 +443,9 @@ public class EvaluatorService {
     }
 
 
+    //endregion
+
+    //region Automatic award selection and response mapping
 // ---------------- EVALUATION HELPERS ----------------
 
     private void automaticallyAwardTenderIfReady(
@@ -626,4 +633,5 @@ public class EvaluatorService {
                 evaluation.getUpdatedAt()
         );
     }
+    //endregion
 }
