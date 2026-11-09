@@ -17,3 +17,4 @@ html.dark .evaluator-portal .workspace-shell,html.dark .evaluator-portal .worksp
 
 /* The evaluator overview has two metrics. */
 .evaluator-portal .metrics-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.evaluator-portal .evaluator-tabs{display:flex;gap:8px;padding:0 20px 14px;border-bottom:1px solid #e5e7eb}.evaluator-portal .evaluator-tabs button{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid transparent;border-radius:6px;background:transparent;color:#64748b;font-size:13px;font-weight:650}.evaluator-portal .evaluator-tabs button.active{border-color:#cbd9dc;background:#edf3f3;color:#285970}.evaluator-portal .evaluator-tabs span{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:#e2e8f0;color:#475569;font-size:11px}.evaluator-portal .evaluator-tabs button.active span{background:#d5e3e4;color:#285970}
