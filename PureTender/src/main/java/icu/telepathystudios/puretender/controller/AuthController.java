@@ -2,6 +2,7 @@ package icu.telepathystudios.puretender.controller;
 
 
 import icu.telepathystudios.puretender.dto.auth.AuthResponse;
+import icu.telepathystudios.puretender.dto.auth.AccountStatusResponse;
 import icu.telepathystudios.puretender.dto.auth.LoginRequest;
 import icu.telepathystudios.puretender.dto.auth.RegisterRequest;
 import icu.telepathystudios.puretender.model.enums.Role;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -38,5 +40,13 @@ public class AuthController {
         AuthResponse response = authService.login(request);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me/status")
+    public ResponseEntity<AccountStatusResponse> getCurrentAccountStatus(
+            Authentication authentication) {
+        return ResponseEntity.ok(
+                authService.getCurrentAccountStatus(authentication.getName())
+        );
     }
 }

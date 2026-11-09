@@ -124,6 +124,17 @@ public class FabricService {
         return new String(result, StandardCharsets.UTF_8);
     }
 
+    public boolean integrityRecordExists(String recordId) throws Exception {
+        byte[] result = contract.evaluateTransaction("RecordExists", recordId);
+        return Boolean.parseBoolean(new String(result, StandardCharsets.UTF_8)
+                .trim().replace("\"", ""));
+    }
+
+    public String readIntegrityRecord(String recordId) throws Exception {
+        byte[] result = contract.evaluateTransaction("ReadRecord", recordId);
+        return new String(result, StandardCharsets.UTF_8);
+    }
+
     public String createAsset(
             String assetId,
             String color,

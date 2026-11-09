@@ -27,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.math.RoundingMode;
 import java.util.UUID;
 
 @Service
@@ -57,9 +59,9 @@ public class TenderService {
 
         tender.setTitle(request.title());
         tender.setDescription(request.description());
-        tender.setEstimatedValue(request.estimatedValue());
-        tender.setSubmissionDeadline(request.submissionDeadline());
-        tender.setOpeningDate(request.openingDate());
+        tender.setEstimatedValue(request.estimatedValue().setScale(2, RoundingMode.UNNECESSARY));
+        tender.setSubmissionDeadline(databasePrecision(request.submissionDeadline()));
+        tender.setOpeningDate(databasePrecision(request.openingDate()));
 
         tender.setAuthority(authority);
         tender.setStatus(TenderStatus.SUBMITTED);
@@ -100,9 +102,9 @@ public class TenderService {
 
         tender.setTitle(request.title());
         tender.setDescription(request.description());
-        tender.setEstimatedValue(request.estimatedValue());
-        tender.setSubmissionDeadline(request.submissionDeadline());
-        tender.setOpeningDate(request.openingDate());
+        tender.setEstimatedValue(request.estimatedValue().setScale(2, RoundingMode.UNNECESSARY));
+        tender.setSubmissionDeadline(databasePrecision(request.submissionDeadline()));
+        tender.setOpeningDate(databasePrecision(request.openingDate()));
 
         Tender savedTender = tenderRepo.save(tender);
         blockchainRecordService.updateTenderRecord(savedTender);
@@ -290,6 +292,10 @@ public class TenderService {
                     "Opening date must be after submission deadline"
             );
         }
+    }
+
+    private Instant databasePrecision(Instant value) {
+        return value.truncatedTo(ChronoUnit.MICROS);
     }
 
     // ENTITY TO DTO

@@ -25,8 +25,7 @@ public class BlockchainRecordService {
     private final BidDocumentRepo bidDocumentRepo;
 
     public void createTenderRecord(Tender tender) {
-        Map<String, Object> payload = payLoadExtract(tender);
-        submit(true, tenderLedgerId(tender), "TENDER", "", hash(payload));
+        submit(true, tenderLedgerId(tender), "TENDER", "", hashTender(tender));
     }
 
     private Map<String, Object> payLoadExtract(Tender tender) {
@@ -43,8 +42,19 @@ public class BlockchainRecordService {
     }
 
     public void updateTenderRecord(Tender tender) {
-        Map<String, Object> payload = payLoadExtract(tender);
-        submit(false, tenderLedgerId(tender), "TENDER", "", hash(payload));
+        submit(false, tenderLedgerId(tender), "TENDER", "", hashTender(tender));
+    }
+
+    public String hashTender(Tender tender) {
+        return hash(payLoadExtract(tender));
+    }
+
+    public boolean integrityRecordExists(String recordId) throws Exception {
+        return fabricService.integrityRecordExists(recordId);
+    }
+
+    public String readIntegrityRecord(String recordId) throws Exception {
+        return fabricService.readIntegrityRecord(recordId);
     }
 
     public void createBidRecord(Bid bid) {
@@ -71,6 +81,12 @@ public class BlockchainRecordService {
             );
         }
 
+        String payloadHash = hashBid(bid, document);
+        submit(create, bidLedgerId(bid), "BID",
+                tenderLedgerId(bid.getTender()), payloadHash);
+    }
+
+    public String hashBid(Bid bid, BidDocument document) {
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("id", bid.getId().toString());
         payload.put("tenderId", bid.getTender().getId().toString());
@@ -79,8 +95,7 @@ public class BlockchainRecordService {
         payload.put("submittedAt", bid.getSubmittedAt().toString());
         payload.put("proposalSha256", document.getSha256Hash());
 
-        submit(create, bidLedgerId(bid), "BID",
-                tenderLedgerId(bid.getTender()), hash(payload));
+        return hash(payload);
     }
 
     private String tenderLedgerId(Tender tender) {

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +44,8 @@ public class IntegrityReportService {
                         "Tender not found."
                 ));
 
-        if (tender.getStatus() != TenderStatus.UNDER_EVALUATION
+        if ((tender.getStatus() != TenderStatus.UNDER_EVALUATION
+                && tender.getStatus() != TenderStatus.ON_HOLD)
                 || tenderAwardRepo.existsByTender_Id(tenderId)) {
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
@@ -68,6 +70,18 @@ public class IntegrityReportService {
             }
         }
 
+        List<IntegrityReportStatus> activeStatuses = List.of(
+                IntegrityReportStatus.OPEN,
+                IntegrityReportStatus.UNDER_REVIEW
+        );
+        var existingReport = integrityReportRepo
+                .findFirstByTender_IdAndBid_IdAndTypeAndStatusIn(
+                        tenderId, bidId, type, activeStatuses
+                );
+        if (existingReport.isPresent()) {
+            return existingReport.get();
+        }
+
         IntegrityReport report = new IntegrityReport();
 
         report.setTender(tender);
@@ -79,8 +93,10 @@ public class IntegrityReportService {
         report.setStatus(IntegrityReportStatus.OPEN);
 
         IntegrityReport savedReport = integrityReportRepo.save(report);
-        tender.setStatus(TenderStatus.ON_HOLD);
-        tenderRepo.save(tender);
+        if (tender.getStatus() != TenderStatus.ON_HOLD) {
+            tender.setStatus(TenderStatus.ON_HOLD);
+            tenderRepo.save(tender);
+        }
 
         return savedReport;
     }

@@ -18,7 +18,7 @@ type SmartContract struct {
 type IntegrityRecord struct {
 	RecordID   string `json:"recordId"`
 	RecordType string `json:"recordType"`
-	ParentID   string `json:"parentId,omitempty"`
+	ParentID   string `json:"parentId"`
 	PayloadHash string `json:"payloadHash"`
 	CreatedAt  string `json:"createdAt"`
 	UpdatedAt  string `json:"updatedAt"`

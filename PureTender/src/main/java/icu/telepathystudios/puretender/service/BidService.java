@@ -31,7 +31,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Service
@@ -73,7 +75,7 @@ public class BidService {
 
         bid.setTender(tender);
         bid.setContractor(contractor);
-        bid.setQuotedAmount(request.quotedAmount());
+        bid.setQuotedAmount(request.quotedAmount().setScale(2, RoundingMode.UNNECESSARY));
         bid.setStatus(BidStatus.DRAFT);
 
         return mapToResponse(bidRepo.save(bid));
@@ -100,7 +102,7 @@ public class BidService {
 
         validateTenderForBidding(bid.getTender());
 
-        bid.setQuotedAmount(request.quotedAmount());
+        bid.setQuotedAmount(request.quotedAmount().setScale(2, RoundingMode.UNNECESSARY));
 
         Bid savedBid = bidRepo.save(bid);
         if (savedBid.getStatus() == BidStatus.SUBMITTED) {
@@ -137,7 +139,7 @@ public class BidService {
         validateTenderForBidding(bid.getTender());
 
         bid.setStatus(BidStatus.SUBMITTED);
-        bid.setSubmittedAt(Instant.now());
+        bid.setSubmittedAt(Instant.now().truncatedTo(ChronoUnit.MICROS));
 
         Bid submittedBid = bidRepo.save(bid);
         blockchainRecordService.createBidRecord(submittedBid);

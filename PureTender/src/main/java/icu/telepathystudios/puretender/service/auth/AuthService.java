@@ -2,6 +2,7 @@ package icu.telepathystudios.puretender.service.auth;
 
 
 import icu.telepathystudios.puretender.dto.auth.AuthResponse;
+import icu.telepathystudios.puretender.dto.auth.AccountStatusResponse;
 import icu.telepathystudios.puretender.dto.auth.LoginRequest;
 import icu.telepathystudios.puretender.dto.auth.RegisterRequest;
 import icu.telepathystudios.puretender.model.enums.AccountStatus;
@@ -98,6 +99,17 @@ public class AuthService {
         String token = jwtUtil.generateToken(user.getEmail(),  user.getRole().name());
 
         return toAuthResponse(user, token);
+    }
+
+    @Transactional(readOnly = true)
+    public AccountStatusResponse getCurrentAccountStatus(String email) {
+        User user = authRepo.findByEmail(normalizeEmail(email))
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found"
+                ));
+
+        return new AccountStatusResponse(user.getStatus());
     }
 
     private AuthResponse toAuthResponse(
