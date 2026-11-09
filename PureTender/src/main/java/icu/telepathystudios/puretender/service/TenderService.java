@@ -9,11 +9,14 @@ import icu.telepathystudios.puretender.dto.tender.TenderAwardSummaryResponse;
 import icu.telepathystudios.puretender.dto.tender.UpdateTenderRequest;
 import icu.telepathystudios.puretender.model.classes.Tender;
 import icu.telepathystudios.puretender.model.classes.TenderAward;
+import icu.telepathystudios.puretender.model.classes.Bid;
+import icu.telepathystudios.puretender.model.enums.BidStatus;
 import icu.telepathystudios.puretender.model.classes.User;
 import icu.telepathystudios.puretender.model.enums.AccountStatus;
 import icu.telepathystudios.puretender.model.enums.Role;
 import icu.telepathystudios.puretender.model.enums.TenderStatus;
 import icu.telepathystudios.puretender.repo.AuthRepo;
+import icu.telepathystudios.puretender.repo.bid.BidRepo;
 import icu.telepathystudios.puretender.repo.tender.TenderRepo;
 import icu.telepathystudios.puretender.repo.tender.TenderAwardRepo;
 import icu.telepathystudios.puretender.service.blockchain.BlockchainRecordService;
@@ -33,6 +36,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.math.RoundingMode;
 import java.util.UUID;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +44,7 @@ public class TenderService {
 
     private final TenderRepo tenderRepo;
     private final TenderAwardRepo tenderAwardRepo;
+    private final BidRepo bidRepo;
     private final AuthRepo authRepo;
     private final BlockchainRecordService blockchainRecordService;
 
@@ -142,15 +147,28 @@ public class TenderService {
                     HttpStatus.NOT_FOUND, "No award has been recorded for this tender."
             );
         }
-        TenderAward award = tenderAwardRepo.findByTender_Id(tenderId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "No award has been recorded for this tender."
-                ));
-        var winningBid = award.getWinningBid();
+        TenderAward award = tenderAwardRepo.findByTender_Id(tenderId).orElse(null);
+        Bid winningBid;
+        Instant awardedAt = null;
+        if (award != null) {
+            winningBid = award.getWinningBid();
+            awardedAt = award.getAwardedAt();
+        } else {
+            List<Bid> selectedBids = bidRepo.findAllByTender_IdAndStatus(
+                    tenderId, BidStatus.SELECTED
+            );
+            if (selectedBids.size() != 1) {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Tender is marked awarded, but no unique winning bid could be found."
+                );
+            }
+            winningBid = selectedBids.get(0);
+        }
         return new TenderAwardSummaryResponse(
                 tender.getId(), tender.getTitle(), winningBid.getId(),
                 winningBid.getContractor().getFullName(), winningBid.getQuotedAmount(),
-                award.getAwardedAt()
+                awardedAt
         );
     }
 
